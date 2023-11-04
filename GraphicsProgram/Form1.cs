@@ -15,7 +15,8 @@ namespace GraphicsProgram
             }
 
             var graphics = Graphics.FromImage(pictureBox1.Image);
-            graphics.FillEllipse(Brushes.AliceBlue, 10, 10, 100, 100);
+            graphics.FillEllipse(Brushes.Cyan, 10, 10, 100, 100);
+            button1.Text = CommandParser.CommandSplit("Test A")[1];
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
