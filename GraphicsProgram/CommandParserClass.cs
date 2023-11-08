@@ -63,16 +63,18 @@ namespace GraphicsProgram
 					}
 					else
 					{
-						return "Parameter incorrect, must be integer";
+						//return "Parameter incorrect, must be integer";
+						return null;
 					}
                 }
 				else
 				{
-					return "Error incorrect amount of params, should be 1";
+					//return "Error incorrect amount of params, should be 1";
+					return null;
 				}
 					
 				}
-			return "";
+			return null;
 		}
 		
 	}

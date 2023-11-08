@@ -78,6 +78,7 @@
             button2.TabIndex = 4;
             button2.Text = "Syntax";
             button2.UseVisualStyleBackColor = true;
+            button2.Click += button2_Click;
             // 
             // Form1
             // 
@@ -101,7 +102,7 @@
 
         private TextBox textBox1;
         private Button button1;
-        private PictureBox pictureBox1;
+        internal PictureBox pictureBox1;
         private TextBox textBox2;
         private Button button2;
     }
