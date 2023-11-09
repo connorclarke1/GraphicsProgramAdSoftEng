@@ -8,6 +8,6 @@ namespace GraphicsProgram
 {
     interface Shapes
     {
-
+        
     }
 }
