@@ -13,6 +13,7 @@ namespace GraphicsProgram
 		{
 			string[] splitCommand = CommandSplit(inCommand);
 			string strCommand = CommandExtract(splitCommand);
+			object[] paramArray = ParamExtract(splitCommand, strCommand);
 		}
 		public static string[] CommandSplit(String commandStr)
 		//Splits command into array of strings, splits at whitespace and removes empty enteries, e.g double spaces
@@ -45,7 +46,7 @@ namespace GraphicsProgram
 			}
 			if (validCommands.Contains(commandArray[0].ToLower()))
 			{
-				string commandExtracted = commandArray[0];
+				string commandExtracted = commandArray[0].ToLower();
 				return commandExtracted;
 			}
 			else
@@ -56,61 +57,101 @@ namespace GraphicsProgram
 			
 		}
 
-		public static object[] ParamExtract(String[] commandArray)
+		public static object[] ParamExtract(String[] commandArray, string commandStr)
 		//up to two parameters for each command
 		//TODO add error for params
 		//TODO create way to return parameters after checking
 		{
 			object[] paramArray;
-			if (commandArray[0] == "circle")
+			Type[] typeArray;
+			String[] NoParams = { "clear", "reset" };
+			String[] OneIntParams = {"circle"};
+			String[] TwoIntParams = {"moveto", "drawto", "rectangle"};
+			String[] FourIntParams = { "triangle" };
+			String[] OneStrParams = {"colour", "fill"};
+			if (NoParams.Contains(commandStr)) 
 			{
-				if (commandArray.Length == 2)
-				{
-					//if parameter is integer
-					if (int.TryParse(commandArray[1], out _))
-					{
-						paramArray = new object[1];
-						//already confirmed param is integer
-						paramArray[0] = int.Parse(commandArray[1]);
-						return paramArray;
-					}
-					else
-					{
-						//return "Parameter incorrect, must be integer";
-						return null;
-					}
-				}
+				paramArray = ParamExtractArray(commandArray, new Type[0]);
 			}
-			else if (commandArray[0] == "moveto")
-			{
-				if (commandArray.Length == 3)
-				{
-					//if parameter is integer
-					if (int.TryParse(commandArray[1], out _))
-					{
-						paramArray = new object[2];
-						//already confirmed param is integer
-						paramArray[0] = int.Parse(commandArray[1]);
-						paramArray[1] = int.Parse(commandArray[2]);
-						return paramArray;
-					}
-					else
-					{
-						//return "Parameter incorrect, must be integer";
-						return null; //add errors here, only one param or not int
-					}
-				}
+            else if (OneIntParams.Contains(commandStr))
+            {
+				typeArray = new Type[1];
+				typeArray[0] = typeof(int);
+                paramArray = ParamExtractArray(commandArray, typeArray);
+            }
+            else if (TwoIntParams.Contains(commandStr))
+            {
+                typeArray = new Type[2];
+                typeArray[0] = typeof(int);
+                typeArray[1] = typeof(int);
+                paramArray = ParamExtractArray(commandArray, typeArray);
+            }
+            else if (FourIntParams.Contains(commandStr))
+            {
+                typeArray = new Type[4];
+                typeArray[0] = typeof(int);
+                typeArray[1] = typeof(int);
+                typeArray[2] = typeof(int);
+                typeArray[3] = typeof(int);
+                paramArray = ParamExtractArray(commandArray, typeArray);
+            }
+            else if (OneStrParams.Contains(commandStr))
+            {
+                typeArray = new Type[1];
+                typeArray[0] = typeof(string);
+                paramArray = ParamExtractArray(commandArray, typeArray);
+            }
+			else { return null; }//will never run as command has already been checked but add global exception handling
 
-				else
-				{
-					//return "Error incorrect amount of params, should be 1";
-					return null;
-				}
-
-			}
-				
-			
-			return null;//error exception of command invalid, should never get here since validated already
+			return paramArray;
 		}
-	}
+
+		public static object[] ParamExtractArray(String[] commandArray, Type[] typeArray)
+		{
+			//TODO add range arrays, tuples for ints, list for strings
+			object[] paramArray;
+			if ((commandArray.Length - 1) != typeArray.Length) { return null; }//incorrect amount of params
+            paramArray = new object[commandArray.Length - 1];
+
+            for (int i = 0; i < commandArray.Length - 1; i++)
+            {
+                if (!TryConvert(commandArray[i+1], typeArray[i]))
+                {
+                    return null; // Conversion failed for at least one element, type error
+                }
+                paramArray[i] = Convert.ChangeType(commandArray[i + 1], typeArray[i]);
+            }//now param array is filled with correct types
+			return paramArray;
+        }
+
+		static void checkParamRange() 
+		{
+			String[] paramArray = {"PlaceHolder"};
+            if (paramArray[0] is String)
+            //all commands only have one type of param, eg all ints or strings
+            {
+
+            }
+
+            if (paramArray[0] is int)
+            //all commands only have one type of param, eg all ints or strings
+            {
+
+            }
+        }
+
+        static bool TryConvert(string value, Type targetType)
+        {
+            try
+            {
+                // Use Convert.ChangeType to attempt the conversion
+                Convert.ChangeType(value, targetType);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false; // Conversion failed
+            }
+        }
+    }
 }
