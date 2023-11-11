@@ -8,7 +8,7 @@ namespace GraphicsProgram
 {
     interface Shapes
     {
-        public void draw(Pointer pointer, Color colour, bool fillBool);
+        //public void draw(Pointer pointer, Color colour, bool fillBool);
 
     }
 }

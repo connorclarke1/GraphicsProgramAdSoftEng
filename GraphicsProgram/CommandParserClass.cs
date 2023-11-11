@@ -6,7 +6,10 @@ namespace GraphicsProgram
 
 	public class CommandParser
 	{
-		public static void FullParse(string inCommand)
+		GraphicsHandler graphicsHandler;
+
+		internal void setGraphicsHandler(GraphicsHandler g) { graphicsHandler = g; }
+		public void FullParse(string inCommand)
 		// returns array with command, and parameters, fully checked
 		//TODO change void to array so returns
 		//TODO take command from textbox
@@ -14,6 +17,7 @@ namespace GraphicsProgram
 			string[] splitCommand = CommandSplit(inCommand);
 			string strCommand = CommandExtract(splitCommand);
 			object[] paramArray = ParamExtract(splitCommand, strCommand);
+			executeCommand(strCommand, paramArray);
 		}
 		public static string[] CommandSplit(String commandStr)
 		//Splits command into array of strings, splits at whitespace and removes empty enteries, e.g double spaces
@@ -124,20 +128,38 @@ namespace GraphicsProgram
 			return paramArray;
         }
 
-		static void checkParamRange() 
+		static bool checkParamRange(Object[] paramArray, string commandStr) 
 		{
-			String[] paramArray = {"PlaceHolder"};
-            if (paramArray[0] is String)
+			//TODO deal with colours
+			//All Params have me checked by this point, the are the correct type and length
+			//Add global exception handling
+			if (paramArray.Length == 0) { return true;}
+            else if (paramArray[0] is String)
             //all commands only have one type of param, eg all ints or strings
             {
-
+				string[] colours = { }; //add colours enums
+				string[] onOff = {"on" , "off"};
+				if (commandStr == "fill")
+				{
+					if (onOff.Contains(paramArray[1]))
+					{
+						return true;
+					}
+					else
+					{
+						return false;//parameter incorrect
+					}
+				}
+				return false;
             }
 
-            if (paramArray[0] is int)
+            else if (paramArray[0] is int)
             //all commands only have one type of param, eg all ints or strings
             {
-
-            }
+				return true; //All int params should be okay since the graphics can cut off parts out of range
+				//potentially add out of range for extremely large numbers
+			}
+			else { return false; }//Global Exception
         }
 
         static bool TryConvert(string value, Type targetType)
@@ -153,5 +175,30 @@ namespace GraphicsProgram
                 return false; // Conversion failed
             }
         }
+
+		public void executeCommand(String strCommand, object[] paramArray)
+		{
+			if (strCommand == "colour") 
+			{
+				String colourString = (String)(paramArray[0]);
+				graphicsHandler.setColour(StringToColour.Convert(colourString)); 
+			}
+			if (strCommand == "moveto")
+			{
+				int[] intArray = new int[2];
+				intArray[0] = (int)paramArray[0];
+                intArray[1] = (int)paramArray[1];
+                graphicsHandler.pointer.setPointerPos(intArray);
+			}
+            if (strCommand == "drawto")
+            {
+                int[] intArray = new int[2];
+                intArray[0] = (int)paramArray[0];
+                intArray[1] = (int)paramArray[1];
+                //drawTo.draw(intArray);
+            }
+
+        }
+
     }
 }

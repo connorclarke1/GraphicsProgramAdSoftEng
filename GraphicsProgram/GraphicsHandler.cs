@@ -11,7 +11,9 @@ namespace GraphicsProgram
     {
         Graphics graphics;
         PictureBox pictureBox;
-        Pointer pointer;
+        internal Pointer pointer;
+        Pen pen;
+        SolidBrush brush;
 
         //Graphics Handler initialisation - creates bitmap, clears it to be reset
         public GraphicsHandler(PictureBox pictureBox)
@@ -26,6 +28,7 @@ namespace GraphicsProgram
             graphics.Clear(Color.White);
             graphics.SetClip(new Rectangle(0, 0, pictureBox.Width, pictureBox.Height));
             pointer = new Pointer();
+            brush = new SolidBrush(Color.Black);
             //graphics.FillEllipse(Brushes.Cyan, 10, 10, 100, 100);
         }
 
@@ -42,6 +45,11 @@ namespace GraphicsProgram
             //graphics.Clear(Color.White);
             //pictureBox.Invalidate();
             Clear.ClearMethod(graphics, pictureBox);
+        }
+        public void setColour(Color colour) 
+        {
+            pen.Color = colour;
+            brush.Color = colour;
         }
     }
 }
