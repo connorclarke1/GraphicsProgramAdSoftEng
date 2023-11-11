@@ -8,9 +8,10 @@ namespace GraphicsProgram
 {
     internal class Clear
     {
-        public static void ClearMethod(Graphics g)
+        public static void ClearMethod(Graphics g, PictureBox p)
         {
             g.Clear(Color.White);
+            p.Invalidate();
         }
     }
 }

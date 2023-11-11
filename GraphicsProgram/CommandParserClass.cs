@@ -20,30 +20,40 @@ namespace GraphicsProgram
 		{
 			string[] parsedStr = commandStr.Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
 			return parsedStr;
-        }
+		}
 
 		public static string CommandExtract(String[] commandArray)
 		//TODO add commandArray null exception
 		//TODO update command list as they are created
 		{
 			//array of valid commands in lower case
-			string[] validCommands = { "circle" };
+			string[] validCommands = { "circle" ,
+										"moveto",
+										"drawto",
+										"clear",
+										"reset",
+										"rectangle",
+										"circle",
+										"triangle",
+										"colour",
+										"fill"};
 			//commandArray[0] will always be command
 			if (commandArray.Length == 0)
 			{
 				//TODO add commandArray null error flag
 				return "Error, commandArray null";
 			}
-			if (validCommands.Contains(commandArray[0]))
+			if (validCommands.Contains(commandArray[0].ToLower()))
 			{
-                string commandExtracted = commandArray[0];
-                return commandExtracted;
-            }
-			else { 
+				string commandExtracted = commandArray[0];
+				return commandExtracted;
+			}
+			else
+			{
 				//TODO add command error flag here
 				return "Command not valid";
 			}
-                
+			
 		}
 
 		public static object[] ParamExtract(String[] commandArray)
@@ -52,10 +62,13 @@ namespace GraphicsProgram
 		//TODO create way to return parameters after checking
 		{
 			object[] paramArray;
-			if (commandArray[0] == "circle"){
-				if (commandArray.Length == 2){
+			if (commandArray[0] == "circle")
+			{
+				if (commandArray.Length == 2)
+				{
 					//if parameter is integer
-					if (int.TryParse(commandArray[1], out _)){
+					if (int.TryParse(commandArray[1], out _))
+					{
 						paramArray = new object[1];
 						//already confirmed param is integer
 						paramArray[0] = int.Parse(commandArray[1]);
@@ -66,16 +79,38 @@ namespace GraphicsProgram
 						//return "Parameter incorrect, must be integer";
 						return null;
 					}
-                }
+				}
+			}
+			else if (commandArray[0] == "moveto")
+			{
+				if (commandArray.Length == 3)
+				{
+					//if parameter is integer
+					if (int.TryParse(commandArray[1], out _))
+					{
+						paramArray = new object[2];
+						//already confirmed param is integer
+						paramArray[0] = int.Parse(commandArray[1]);
+						paramArray[1] = int.Parse(commandArray[2]);
+						return paramArray;
+					}
+					else
+					{
+						//return "Parameter incorrect, must be integer";
+						return null; //add errors here, only one param or not int
+					}
+				}
+
 				else
 				{
 					//return "Error incorrect amount of params, should be 1";
 					return null;
 				}
-					
-				}
-			return null;
+
+			}
+				
+			
+			return null;//error exception of command invalid, should never get here since validated already
 		}
-		
 	}
 }

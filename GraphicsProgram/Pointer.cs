@@ -15,11 +15,23 @@ namespace GraphicsProgram
             ypos = 0;
             xpos = 0;
         }
-
+        
         public int[] getPointerPos()
         {
             int[] posArray =  {xpos , ypos};
             return posArray;
+        }
+
+        public int getPointerXPos() 
+        //added x and y pos getters for faster processing if x is used only
+        {
+            return xpos;
+        }
+
+        public int getPointerYPos()
+        //added x and y pos getters for faster processing if y is used only
+        {
+            return ypos;
         }
 
         //maybe change to two integers see in actual implementation

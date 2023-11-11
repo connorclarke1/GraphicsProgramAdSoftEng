@@ -8,6 +8,9 @@ namespace GraphicsProgram
 {
     internal class Circle : Shapes
     {
-
+        public void draw(Pointer pointer, Color colour, bool fillBool)
+        {
+           
+        }
     }
 }

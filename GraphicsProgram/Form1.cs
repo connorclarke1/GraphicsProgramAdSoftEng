@@ -37,7 +37,8 @@ namespace GraphicsProgram
         private void button2_Click(object sender, EventArgs e)
         {
             var graphics = Graphics.FromImage(pictureBox1.Image);
-            Clear.ClearMethod(graphics);
+            //Clear.ClearMethod(graphics);
+            graphicsHandler.ClearTest();    
         }
     }
 }
