@@ -4,15 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.AxHost;
 
 namespace GraphicsProgram
 {
     internal class GraphicsHandler
     {
-        Graphics graphics;
+        internal Graphics graphics;
         PictureBox pictureBox;
         internal Pointer pointer;
-        Pen pen;
+        internal Pen pen;
         SolidBrush brush;
 
         //Graphics Handler initialisation - creates bitmap, clears it to be reset
@@ -29,6 +30,7 @@ namespace GraphicsProgram
             graphics.SetClip(new Rectangle(0, 0, pictureBox.Width, pictureBox.Height));
             pointer = new Pointer();
             brush = new SolidBrush(Color.Black);
+            pen = new Pen(Color.Black);
             //graphics.FillEllipse(Brushes.Cyan, 10, 10, 100, 100);
         }
 
@@ -36,8 +38,9 @@ namespace GraphicsProgram
         {
             int xpos = pointer.getPointerXPos();
             int ypos = pointer.getPointerYPos();
-            
-            graphics.FillEllipse(Brushes.Cyan, xpos - 50, ypos - 50, 100, 100);
+
+            //graphics.FillEllipse(Brushes.Cyan, xpos - 50, ypos - 50, 100, 100);
+            //graphics.DrawLine(pen, xpos, ypos, 100, 100);
         }
 
         public void ClearTest()

@@ -6,7 +6,7 @@ namespace GraphicsProgram
 
 	public class CommandParser
 	{
-		GraphicsHandler graphicsHandler;
+		GraphicsHandler? graphicsHandler;//add global exeption 
 
 		internal void setGraphicsHandler(GraphicsHandler g) { graphicsHandler = g; }
 		public void FullParse(string inCommand)
@@ -23,7 +23,7 @@ namespace GraphicsProgram
 		//Splits command into array of strings, splits at whitespace and removes empty enteries, e.g double spaces
 		//TODO make all lower case to avoid case issues
 		{
-			string[] parsedStr = commandStr.Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
+			string[] parsedStr = commandStr.ToLower().Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
 			return parsedStr;
 		}
 
