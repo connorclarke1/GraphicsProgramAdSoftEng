@@ -8,11 +8,11 @@ using static System.Windows.Forms.AxHost;
 
 namespace GraphicsProgram
 {
-    internal class GraphicsHandler
+    public class GraphicsHandler
     {
         internal Graphics graphics;
-        PictureBox pictureBox;
-        internal Pointer pointer;
+        internal PictureBox pictureBox;
+        public Pointer pointer;
         internal Pen pen;
         SolidBrush brush;
 
@@ -36,8 +36,8 @@ namespace GraphicsProgram
 
         public void CircleTest() 
         {
-            int xpos = pointer.getPointerXPos();
-            int ypos = pointer.getPointerYPos();
+            int xpos = pointer.GetPointerXPos();
+            int ypos = pointer.GetPointerYPos();
 
             //graphics.FillEllipse(Brushes.Cyan, xpos - 50, ypos - 50, 100, 100);
             //graphics.DrawLine(pen, xpos, ypos, 100, 100);
@@ -49,10 +49,12 @@ namespace GraphicsProgram
             //pictureBox.Invalidate();
             Clear.ClearMethod(graphics, pictureBox);
         }
-        public void setColour(Color colour) 
+        public void SetColour(Color colour) 
         {
             pen.Color = colour;
             brush.Color = colour;
         }
+
+        
     }
 }

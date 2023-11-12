@@ -22,7 +22,8 @@ namespace GraphicsProgram
             //graphicsHandler.CircleTest();
             //graphicsHandler.CircleTest();
             //button1.Text = CommandParser.CommandSplit("Test A")[1];
-            graphicsHandler.ClearTest();
+            //graphicsHandler.ClearTest();
+            commandParser.FullParse(textBox1.Text);
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -47,7 +48,7 @@ namespace GraphicsProgram
             //graphicsHandler.ClearTest();
 
             //graphics.DrawLine(p, startX, startY, endX, endY);
-            DrawTo.Draw(graphicsHandler, 100, 100);
+            
         }
     }
 }

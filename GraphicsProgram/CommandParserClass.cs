@@ -13,6 +13,7 @@ namespace GraphicsProgram
 		// returns array with command, and parameters, fully checked
 		//TODO change void to array so returns
 		//TODO take command from textbox
+		//TODO add try catch for exceptions 1) CommandExtract 2)ParamExtract
 		{
 			string[] splitCommand = CommandSplit(inCommand);
 			string strCommand = CommandExtract(splitCommand);
@@ -45,8 +46,7 @@ namespace GraphicsProgram
 			//commandArray[0] will always be command
 			if (commandArray.Length == 0)
 			{
-				//TODO add commandArray null error flag
-				return "Error, commandArray null";
+				throw new Exception("Command Array Null");
 			}
 			if (validCommands.Contains(commandArray[0].ToLower()))
 			{
@@ -55,8 +55,7 @@ namespace GraphicsProgram
 			}
 			else
 			{
-				//TODO add command error flag here
-				return "Command not valid";
+				throw new Exception("Invalid command");
 			}
 			
 		}
@@ -121,36 +120,47 @@ namespace GraphicsProgram
             {
                 if (!TryConvert(commandArray[i+1], typeArray[i]))
                 {
-                    return null; // Conversion failed for at least one element, type error
+					throw new Exception("Parameter Conversion to Int Failed");
                 }
                 paramArray[i] = Convert.ChangeType(commandArray[i + 1], typeArray[i]);
             }//now param array is filled with correct types
 			return paramArray;
         }
 
-		static bool checkParamRange(Object[] paramArray, string commandStr) 
+		public static bool checkParamRange(Object[] paramArray, string commandStr) 
 		{
-			//TODO deal with colours
-			//All Params have me checked by this point, the are the correct type and length
+			//All Params have been checked by this point, the are the correct type and length
 			//Add global exception handling
 			if (paramArray.Length == 0) { return true;}
             else if (paramArray[0] is String)
             //all commands only have one type of param, eg all ints or strings
             {
-				string[] colours = { }; //add colours enums
+				string[] colours = { "black","blue","green","red", "white","yellow" }; //add colours enums
 				string[] onOff = {"on" , "off"};
 				if (commandStr == "fill")
 				{
-					if (onOff.Contains(paramArray[1]))
+					if (onOff.Contains(paramArray[0]))
 					{
 						return true;
 					}
 					else
 					{
-						return false;//parameter incorrect
+						throw new Exception("Fill parameter must be on/off");
 					}
 				}
-				return false;
+                if (commandStr == "colour")
+                {
+                    if (colours.Contains(paramArray[0]))
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        throw new Exception("Colour" + paramArray[0] + "not supported");
+                    }
+                }
+				//only int params can get here and any int is in range just may not be visible if too big
+                return true;
             }
 
             else if (paramArray[0] is int)
@@ -181,21 +191,21 @@ namespace GraphicsProgram
 			if (strCommand == "colour") 
 			{
 				String colourString = (String)(paramArray[0]);
-				graphicsHandler.setColour(StringToColour.Convert(colourString)); 
+				graphicsHandler.SetColour(StringToColour.Convert(colourString)); 
 			}
 			if (strCommand == "moveto")
 			{
 				int[] intArray = new int[2];
 				intArray[0] = (int)paramArray[0];
                 intArray[1] = (int)paramArray[1];
-                graphicsHandler.pointer.setPointerPos(intArray);
+                graphicsHandler.pointer.SetPointerPos(intArray);
 			}
             if (strCommand == "drawto")
             {
                 int[] intArray = new int[2];
                 intArray[0] = (int)paramArray[0];
                 intArray[1] = (int)paramArray[1];
-                //drawTo.draw(intArray);
+                DrawTo.Draw(graphicsHandler, intArray[0], intArray[1]);
             }
 
         }

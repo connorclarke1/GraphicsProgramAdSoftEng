@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GraphicsProgram
 {
-    internal class Pointer
+    public class Pointer
     {
         int ypos, xpos;
 
@@ -22,23 +22,33 @@ namespace GraphicsProgram
             return posArray;
         }
 
-        public int getPointerXPos() 
+        public int GetPointerXPos() 
         //added x and y pos getters for faster processing if x is used only
         {
             return xpos;
         }
 
-        public int getPointerYPos()
+        public int GetPointerYPos()
         //added x and y pos getters for faster processing if y is used only
         {
             return ypos;
         }
 
         //maybe change to two integers see in actual implementation
-        public void setPointerPos(int[] posArray)
+        public void SetPointerPos(int[] posArray)
         {
             this.xpos = posArray[0];
             this.ypos = posArray[1];
         }
+
+        public void SetPointerXPos(int xPos)
+        {
+            this.xpos =xPos;
+        }
+        public void SetPointerYPos(int yPos)
+        {
+            this.ypos = yPos;
+        }
+
     }
 }
