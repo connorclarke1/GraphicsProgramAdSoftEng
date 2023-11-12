@@ -11,9 +11,10 @@ namespace GraphicsProgram
     {
         public static void Draw(GraphicsHandler graphicsHandler, int endX, int endY)
         {
-            Pointer pointer = new Pointer();   
+            Pointer pointer = graphicsHandler.pointer;   
             int startX = pointer.GetPointerXPos();
             int startY = pointer.GetPointerYPos();
+
 
             Graphics g = graphicsHandler.graphics;
             Pen p = graphicsHandler.pen;
@@ -22,14 +23,16 @@ namespace GraphicsProgram
             g.DrawLine(p, startX, startY, endX, endY);
             pictureBox.Invalidate();
 
+            pointer.SetPointerXPos(endX);
+            pointer.SetPointerYPos(endY);
+
             //Set pointer x,y to new location
             //int[] posArray = new int[2];
             //posArray[0] = endX;
             //posArray[1] = endY;
             //pointer.setPointerPos(posArray);
-            pointer.SetPointerXPos(endX);
-            pointer.SetPointerYPos(endY);
-            
+
+
         }
     }
 }

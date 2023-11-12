@@ -43,12 +43,6 @@ namespace GraphicsProgram
             //graphics.DrawLine(pen, xpos, ypos, 100, 100);
         }
 
-        public void ClearTest()
-        {
-            //graphics.Clear(Color.White);
-            //pictureBox.Invalidate();
-            Clear.ClearMethod(graphics, pictureBox);
-        }
         public void SetColour(Color colour) 
         {
             pen.Color = colour;

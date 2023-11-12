@@ -42,7 +42,8 @@ namespace GraphicsProgram
 										"circle",
 										"triangle",
 										"colour",
-										"fill"};
+										"fill",
+										"run"};
 			//commandArray[0] will always be command
 			if (commandArray.Length == 0)
 			{
@@ -67,7 +68,7 @@ namespace GraphicsProgram
 		{
 			object[] paramArray;
 			Type[] typeArray;
-			String[] NoParams = { "clear", "reset" };
+			String[] NoParams = { "clear", "reset","run" };
 			String[] OneIntParams = {"circle"};
 			String[] TwoIntParams = {"moveto", "drawto", "rectangle"};
 			String[] FourIntParams = { "triangle" };
@@ -207,6 +208,16 @@ namespace GraphicsProgram
                 intArray[1] = (int)paramArray[1];
                 DrawTo.Draw(graphicsHandler, intArray[0], intArray[1]);
             }
+			if (strCommand == "clear")
+			{
+				Clear.ClearMethod(graphicsHandler);
+			}
+			if (strCommand == "reset")
+			{
+				Clear.ClearMethod(graphicsHandler);
+				graphicsHandler.pointer.SetPointerXPos(0);
+				graphicsHandler.pointer.SetPointerYPos(0);
+			}
 
         }
 

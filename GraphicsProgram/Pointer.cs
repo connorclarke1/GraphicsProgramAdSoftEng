@@ -8,7 +8,7 @@ namespace GraphicsProgram
 {
     public class Pointer
     {
-        int ypos, xpos;
+        public int ypos, xpos;
 
         public Pointer()
         {

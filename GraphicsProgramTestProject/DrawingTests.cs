@@ -25,6 +25,13 @@ namespace GraphicsProgramTestProject
             Assert.AreEqual(graphicsHandler.pointer.GetPointerXPos(), 100);
             Assert.AreEqual(graphicsHandler.pointer.GetPointerYPos(), 100);
         }
+        [TestMethod]
+        public void Pointer_SetXTest()
+        {
+            Pointer pointer = new Pointer();
+            pointer.SetPointerXPos(100);
+            Assert.AreEqual(pointer.xpos, 100);
+        }
         
     }
 }
