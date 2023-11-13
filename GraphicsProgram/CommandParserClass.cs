@@ -11,7 +11,19 @@ namespace GraphicsProgram
 		private String? multilineText;
 
 		public void setGraphicsHandler(GraphicsHandler g) { graphicsHandler = g; }
-		public void FullParse(string inCommand)
+        /// <summary>
+        ///  Attempts to execute a command
+        /// <br/>Example:<br/> Call this method to draw a triangle onto the bitmap image
+        ///     <code>
+        ///     FullParse("circle 50");
+        ///     </code>
+        /// This will draw a circle of radius 50
+		/// 
+		/// Will create pop-up error message if command incorrect
+        /// </summary>
+        /// <param name="inCommand">Command and param String in</param>
+        /// <returns>void</returns>
+        public void FullParse(string inCommand)
 		{
 			string[] splitCommand = CommandSplit(inCommand);
 			try { 
@@ -27,16 +39,35 @@ namespace GraphicsProgram
             
 
         }
-		public static string[] CommandSplit(String commandStr)
-		//Splits command into array of strings, splits at whitespace and removes empty enteries, e.g double spaces
+        /// <summary>
+        /// Splits Command at whitespace and removes extra whitespace
+        /// <br/>Example:<br/> Call this method to split a command and param into a string array
+        ///     <code>
+        ///     CommandSplit("circle 50");
+        ///     </code>
+        /// This will return String[] {"circle", "50"}
+        /// </summary>
+        /// <param name="commandStr">Full Command String</param>
+        /// <returns>String[] ArrayOfStrings</returns>
+        public static string[] CommandSplit(String commandStr)
 		{
 			string[] parsedStr = commandStr.ToLower().Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
 			return parsedStr;
 		}
 
-		public static string CommandExtract(String[] commandArray)
+        /// <summary>
+        /// Extracts command from first position in array of split strings
+        /// <br/>Example:<br/> Call this method to confirm command is valid
+        ///     <code>
+        ///     CommandExtract("circle 50");
+        ///     </code>
+        /// This will return "circle"
+		/// Invalid Commands will throw Exceptions
+        /// </summary>
+        /// <param name="commandArray">Full Command Array from SplitCommand</param>
+        /// <returns>String Command</returns>
+        public static string CommandExtract(String[] commandArray)
 		{
-			//array of valid commands in lower case
 			string[] validCommands = { "circle" ,
 										"moveto",
 										"drawto",
@@ -48,7 +79,6 @@ namespace GraphicsProgram
 										"colour",
 										"fill",
 										"run"};
-			//commandArray[0] will always be command
 			if (commandArray.Length == 0)
 			{
 				throw new Exception("Command Array Empty");
@@ -65,7 +95,30 @@ namespace GraphicsProgram
 			
 		}
 
-		public static object[] ParamExtract(String[] commandArray, string commandStr)
+        /// <summary>
+        /// Returns parameters for given command, will have type depending on command and will throw errors if incorrect parameters are inputted
+        /// <br/>Example:<br/> Call this method to get command parameters
+        ///     <code>
+        ///     ParamExtract("circle 50");
+        ///     </code>
+        /// This will return int[] {50}
+		/// 
+		/// <code>
+        ///     ParamExtract("fill off");
+        ///     </code>
+        /// This will return string[] {"off"}
+		/// 
+		/// <code>
+        ///     ParamExtract("rectangle 50 50");
+        ///     </code>
+        /// This will return int[] {50, 50}
+		/// 
+		/// 
+        /// </summary>
+        /// <param name="commandArray">Full Command Array from SplitCommand</param>
+		/// <param name="commandStr">Command String from ExtractCommand</param>
+        /// <returns>object[] ArrayOfParamObjects</returns>
+        public static object[] ParamExtract(String[] commandArray, string commandStr)
 		{
 			object[] paramArray;
 			Type[] typeArray;
@@ -127,7 +180,13 @@ namespace GraphicsProgram
 			return paramArray;
 		}
 
-		public static object[] ParamExtractArray(String[] commandArray, Type[] typeArray)
+        /// <summary>
+        /// Converts Parameters to correct Type, throws errors if incompatible type
+        /// Used within CommandParser.ParamExtract
+        /// </summary>
+        /// <param name="commandArray">Full Command Array from SplitCommand</param>
+        /// <returns>object[] ParamsExtracted</returns>
+        public static object[] ParamExtractArray(String[] commandArray, Type[] typeArray)
 		{
 			object[] paramArray;
 			if ((commandArray.Length - 1) != typeArray.Length) { throw new Exception("Internal Error: Incorrect Exceptions Parsed to ParamExtractArray"); }//incorrect amount of params

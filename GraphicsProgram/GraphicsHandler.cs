@@ -29,12 +29,10 @@ namespace GraphicsProgram
             pictureBox.Image =  new Bitmap(pictureBox.Width, pictureBox.Height);
             graphics = Graphics.FromImage(pictureBox.Image);
             graphics.Clear(Color.White);
-            //graphics.SetClip(new Rectangle(0, 0, pictureBox.Width, pictureBox.Height));
             pointer = new Pointer();
             brush = new SolidBrush(Color.Black);
             pen = new Pen(Color.Black);
             fill = false;
-            //graphics.FillEllipse(Brushes.Cyan, 10, 10, 100, 100);
         }
 
         public void SetColour(Color colour) 

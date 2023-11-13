@@ -9,7 +9,7 @@ namespace GraphicsProgramTestProject
     public class CommandParserTests
     {
         [TestMethod]
-        public void CommandSplit_Capitals_Test()
+        public void CommandSplit_Capitals_Good_Test()
         {
             //Arrange
             //CommandParser commandParser = new CommandParser(); static so no need to create
@@ -107,6 +107,18 @@ namespace GraphicsProgramTestProject
 
             //Assert
             CollectionAssert.AreEqual(Params, CommandParser.ParamExtract(commandArray, command));
+        }
+        [TestMethod]
+        public void ParamExtract_NoParamWhenNeeded_Test()
+        {
+            //Arrange
+            String[] commandArray = new string[] { "circle" };
+            String command = "circle";
+
+            //Act
+
+            //Assert
+            Assert.ThrowsException<System.Exception>(() => CommandParser.ParamExtract(commandArray, command));
         }
         [TestMethod]
         public void ParamExtract_OneIntParam_WithStringInstead_Test()
