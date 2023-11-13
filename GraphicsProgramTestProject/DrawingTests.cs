@@ -32,6 +32,35 @@ namespace GraphicsProgramTestProject
             pointer.SetPointerXPos(100);
             Assert.AreEqual(pointer.xpos, 100);
         }
-        
+        [TestMethod]
+        public void Pointer_SetFillFalse_Test()
+        {
+            //Arrange
+            PictureBox pictureBox = new PictureBox();
+            pictureBox.Image = (new Bitmap(100, 100));
+            GraphicsHandler graphicsHandler = new GraphicsHandler(pictureBox);
+
+            //Act
+            graphicsHandler.SetFill(false);
+
+            //Assert
+            Assert.AreEqual(false, graphicsHandler.fill);
+        }
+        [TestMethod]
+        public void Pointer_SetFillTrue_Test()
+        {
+            //Arrange
+            PictureBox pictureBox = new PictureBox();
+            pictureBox.Image = (new Bitmap(100, 100));
+            GraphicsHandler graphicsHandler = new GraphicsHandler(pictureBox);
+
+            //Act
+            graphicsHandler.SetFill(true);
+
+            //Assert
+            Assert.AreEqual(true, graphicsHandler.fill);
+        }
+
+
     }
 }

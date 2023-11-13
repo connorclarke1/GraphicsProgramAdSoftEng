@@ -1,4 +1,7 @@
 using GraphicsProgram;
+using System.Drawing;
+using System.Windows.Forms;
+
 namespace GraphicsProgramTestProject
 
 {
@@ -249,6 +252,22 @@ namespace GraphicsProgramTestProject
 
             //Assert
             Assert.AreEqual(true, CommandParser.checkParamRange(paramArray, command));
+        }
+        [TestMethod]
+        public void ExecuteCommand_FillOn_Test()
+        {
+            //Arrange
+            PictureBox pictureBox = new PictureBox();
+            pictureBox.Image = (new Bitmap(100, 100));
+            GraphicsHandler graphicsHandler = new GraphicsHandler(pictureBox);
+            CommandParser commandParser = new CommandParser();
+            commandParser.setGraphicsHandler(graphicsHandler);
+
+            //Act
+            commandParser.FullParse("fill on");
+
+            //Assert
+            Assert.AreEqual(true, graphicsHandler.fill);
         }
     }
 }

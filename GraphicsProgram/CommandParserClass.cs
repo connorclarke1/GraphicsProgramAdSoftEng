@@ -8,7 +8,7 @@ namespace GraphicsProgram
 	{
 		GraphicsHandler? graphicsHandler;//add global exeption 
 
-		internal void setGraphicsHandler(GraphicsHandler g) { graphicsHandler = g; }
+		public void setGraphicsHandler(GraphicsHandler g) { graphicsHandler = g; }
 		public void FullParse(string inCommand)
 		// returns array with command, and parameters, fully checked
 		//TODO change void to array so returns
@@ -217,6 +217,28 @@ namespace GraphicsProgram
 				Clear.ClearMethod(graphicsHandler);
 				graphicsHandler.pointer.SetPointerXPos(0);
 				graphicsHandler.pointer.SetPointerYPos(0);
+			}
+			if (strCommand == "fill")
+			{
+				if ((String)paramArray[0] == "on"){ graphicsHandler.SetFill(true); }
+                if ((String)paramArray[0] == "off") { graphicsHandler.SetFill(false); }
+            }
+			if (strCommand == "circle")
+			{
+				Circle.Draw(graphicsHandler, (int)paramArray[0]);
+			}
+			if (strCommand == "rectangle")
+			{
+				Rectangle.Draw(graphicsHandler, (int)paramArray[0], (int)paramArray[1]);
+			}
+			if (strCommand == "triangle")
+			{
+				Triangle.Draw(graphicsHandler, (int)paramArray[0], (int)paramArray[1], (int)paramArray[2], (int)paramArray[3]);
+			}
+			if (strCommand == "run")
+			{
+				//Commands String Array Get
+				//For length execute command
 			}
 
         }

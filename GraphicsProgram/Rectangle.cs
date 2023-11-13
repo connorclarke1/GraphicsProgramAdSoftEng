@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace GraphicsProgram
 {
-    internal class Circle : Shapes
+    internal class Rectangle
     {
-        public static void Draw(GraphicsHandler graphicsHandler, int radius)
+        public static void Draw(GraphicsHandler graphicsHandler, int xLen, int yLen)
         {
             Pointer pointer = graphicsHandler.pointer;
             int pointerX = pointer.GetPointerXPos();
@@ -18,8 +17,8 @@ namespace GraphicsProgram
             bool fill = graphicsHandler.fill;
             PictureBox pictureBox = graphicsHandler.pictureBox;
 
-            if (fill) { g.FillEllipse(graphicsHandler.brush, pointerX - (radius), pointerY - (radius), (2 * radius), (2 * radius)); }
-            if (!fill) { g.DrawEllipse(graphicsHandler.pen , pointerX - (radius), pointerY - (radius), (2 * radius), (2 * radius)); }
+            if (fill) { g.FillRectangle(graphicsHandler.brush, pointerX, pointerY, xLen, yLen); }
+            if (!fill) { g.DrawRectangle(graphicsHandler.pen, pointerX, pointerY, xLen, yLen); }
             pictureBox.Invalidate();
         }
     }

@@ -14,7 +14,8 @@ namespace GraphicsProgram
         internal PictureBox pictureBox;
         public Pointer pointer;
         internal Pen pen;
-        SolidBrush brush;
+        internal SolidBrush brush;
+        public bool fill;
 
         //Graphics Handler initialisation - creates bitmap, clears it to be reset
         public GraphicsHandler(PictureBox pictureBox)
@@ -27,26 +28,24 @@ namespace GraphicsProgram
             pictureBox.Image =  new Bitmap(pictureBox.Width, pictureBox.Height);
             graphics = Graphics.FromImage(pictureBox.Image);
             graphics.Clear(Color.White);
-            graphics.SetClip(new Rectangle(0, 0, pictureBox.Width, pictureBox.Height));
+            //graphics.SetClip(new Rectangle(0, 0, pictureBox.Width, pictureBox.Height));
             pointer = new Pointer();
             brush = new SolidBrush(Color.Black);
             pen = new Pen(Color.Black);
+            fill = false;
             //graphics.FillEllipse(Brushes.Cyan, 10, 10, 100, 100);
-        }
-
-        public void CircleTest() 
-        {
-            int xpos = pointer.GetPointerXPos();
-            int ypos = pointer.GetPointerYPos();
-
-            //graphics.FillEllipse(Brushes.Cyan, xpos - 50, ypos - 50, 100, 100);
-            //graphics.DrawLine(pen, xpos, ypos, 100, 100);
         }
 
         public void SetColour(Color colour) 
         {
             pen.Color = colour;
             brush.Color = colour;
+        }
+
+        public void SetFill(bool fill)
+        {
+            if (fill) { this.fill = true; }
+            if(!fill) { this.fill = false; }  
         }
 
         
