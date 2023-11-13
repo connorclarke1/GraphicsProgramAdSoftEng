@@ -8,6 +8,16 @@ namespace GraphicsProgram
 {
     internal class StringToColour
     {
+        /// <summary>
+        /// Converts String to Colour 
+        /// <br/>Example:<br/> Call this method to draw a triangle onto the bitmap image
+        ///     <code>
+        ///     StringToColour("blue");
+        ///     </code>
+        /// This will return Color.Blue, if colour not in library will default to Color.Black
+        /// </summary>
+        /// <param name="colourStr">Colour string</param>
+        /// <returns>Color</returns>
         public static Color Convert(String colourStr) 
         {
             if (colourStr.ToLower() == "black") { return Color.Black; }
@@ -16,7 +26,7 @@ namespace GraphicsProgram
             if (colourStr.ToLower() == "red") { return Color.Red; }
             if (colourStr.ToLower() == "white") { return Color.White; }
             if (colourStr.ToLower() == "yellow") { return Color.Yellow; }
-            return Color.Black; //add exception here, should be checked already
+            return Color.Black;
         }
     }
 }
