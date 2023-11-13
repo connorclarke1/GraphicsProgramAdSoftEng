@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 
 namespace GraphicsProgram
 {
@@ -11,7 +12,6 @@ namespace GraphicsProgram
 
 		public void setGraphicsHandler(GraphicsHandler g) { graphicsHandler = g; }
 		public void FullParse(string inCommand)
-		//TODO add try catch for exceptions 1) CommandExtract 2)ParamExtract
 		{
 			string[] splitCommand = CommandSplit(inCommand);
 			try { 
@@ -29,15 +29,12 @@ namespace GraphicsProgram
         }
 		public static string[] CommandSplit(String commandStr)
 		//Splits command into array of strings, splits at whitespace and removes empty enteries, e.g double spaces
-		//TODO make all lower case to avoid case issues
 		{
 			string[] parsedStr = commandStr.ToLower().Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
 			return parsedStr;
 		}
 
 		public static string CommandExtract(String[] commandArray)
-		//TODO add commandArray null exception
-		//TODO update command list as they are created
 		{
 			//array of valid commands in lower case
 			string[] validCommands = { "circle" ,
@@ -69,8 +66,6 @@ namespace GraphicsProgram
 		}
 
 		public static object[] ParamExtract(String[] commandArray, string commandStr)
-		//up to two parameters for each command
-		//TODO create way to return parameters after checking
 		{
 			object[] paramArray;
 			Type[] typeArray;
@@ -134,7 +129,6 @@ namespace GraphicsProgram
 
 		public static object[] ParamExtractArray(String[] commandArray, Type[] typeArray)
 		{
-			//TODO add range arrays, tuples for ints, list for strings
 			object[] paramArray;
 			if ((commandArray.Length - 1) != typeArray.Length) { throw new Exception("Internal Error: Incorrect Exceptions Parsed to ParamExtractArray"); }//incorrect amount of params
             paramArray = new object[commandArray.Length - 1];
@@ -146,7 +140,7 @@ namespace GraphicsProgram
 					throw new Exception("Parameter Conversion to Int Failed");
                 }
                 paramArray[i] = Convert.ChangeType(commandArray[i + 1], typeArray[i]);
-            }//now param array is filled with correct types
+            }
 			return paramArray;
         }
 
@@ -158,7 +152,7 @@ namespace GraphicsProgram
             else if (paramArray[0] is String)
             //all commands only have one type of param, eg all ints or strings
             {
-				string[] colours = { "black","blue","green","red", "white","yellow" }; //add colours enums
+				string[] colours = { "black","blue","green","red", "white","yellow" };
 				string[] onOff = {"on" , "off"};
 				if (commandStr == "fill")
 				{
@@ -241,7 +235,6 @@ namespace GraphicsProgram
 			}
 			if (strCommand == "reset")
 			{
-				Clear.ClearMethod(graphicsHandler);
 				graphicsHandler.pointer.SetPointerXPos(0);
 				graphicsHandler.pointer.SetPointerYPos(0);
 			}
@@ -264,6 +257,7 @@ namespace GraphicsProgram
 			}
 			if (strCommand == "run")
 			{
+				if (GetSyntaxErrorArray().Length != 0) { throw new Exception("Errors in multi line program please use syntax button"); }
 				//Commands String Array Get done on button press
 				RunMultiple(multilineText);
 				//Execute commands in for loop
@@ -284,6 +278,55 @@ namespace GraphicsProgram
 			}
 
         }
+
+		public String[] GetSyntaxErrorArray()
+		{
+			if (multilineText == null)
+			{
+				return new String[0];
+			}
+			String[] multiCommandArray = multilineText.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+
+			String[] errorMessages = new string[0];
+			for (int i = 0; i < multiCommandArray.Length; i++)
+			{
+				string[] splitCommand = CommandSplit(multiCommandArray[i]);
+				try
+				{
+					string strCommand = CommandExtract(splitCommand);
+					object[] paramArray = ParamExtract(splitCommand, strCommand);
+					executeCommand(strCommand, paramArray);
+					Clear.ClearMethod(graphicsHandler);
+				}
+				catch (Exception e)
+				{
+					Array.Resize(ref errorMessages, errorMessages.Length + 1);
+					errorMessages[errorMessages.Length - 1] = ("Line "+ (i+1).ToString() + ": " + e.Message);
+				}
+			}
+			return errorMessages;
+		}
+		public void CheckSyntaxMessage() {
+
+			String[] errorMessages = GetSyntaxErrorArray();
+			if (multilineText.Length == 0)
+			{
+                MessageBox.Show("Multiple line program box empty", "Syntac Checker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            if (errorMessages.Length > 0) 
+			{ 
+				String errorMessage = string.Join(Environment.NewLine, errorMessages);
+				MessageBox.Show(errorMessage, "Syntac Checker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+			else
+			{
+                MessageBox.Show("No Errors","Syntax Checker", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            //return errorMessages;
+        }
+
+		
 
 
     }

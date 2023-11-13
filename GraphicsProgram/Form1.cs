@@ -45,7 +45,8 @@ namespace GraphicsProgram
             //graphicsHandler.ClearTest();
 
             //graphics.DrawLine(p, startX, startY, endX, endY);
-
+            commandParser.SetMultilineText(textBox2.Text);
+            commandParser.CheckSyntaxMessage();
         }
 
         public String GetMultilineText()
