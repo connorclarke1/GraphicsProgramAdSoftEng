@@ -12,7 +12,7 @@ namespace GraphicsProgram
         /// Draws a triangle onto GraphicsHandler.Graphics using GraphicsHandler pointer, colour and param radius
         /// <br/>Example:<br/> Call this method to draw a triangle onto the bitmap image
         ///     <code>
-        ///     Triangle.Draw(graphicsHandler, x1,y2,x2,y2);
+        ///     Triangle.Draw(graphicsHandler, x1,y1,x2,y2);
         ///     </code>
         /// This will draw a triangle between the location of the pointer and x1,y1,x2,y2
         /// </summary>
@@ -20,7 +20,7 @@ namespace GraphicsProgram
         /// <param name="xPointA">X pos of first point.</param>
         /// <param name="yPointA">Y pos of first point.</param>
         /// <param name="xPointB">X pos of second point.</param>
-        /// <param name="yPointB">Y pos of first point.</param>
+        /// <param name="yPointB">Y pos of second point.</param>
         /// <returns>void</returns>
         public static void Draw(GraphicsHandler graphicsHandler, int xPointA, int yPointA, int xPointB, int yPointB)
         {
