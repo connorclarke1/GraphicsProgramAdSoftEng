@@ -7,7 +7,7 @@ namespace GraphicsProgram
 
 	public class CommandParser
 	{
-		GraphicsHandler? graphicsHandler;//add global exeption 
+		GraphicsHandler? graphicsHandler;
 		private String? multilineText;
 
 		public void setGraphicsHandler(GraphicsHandler g) { graphicsHandler = g; }
@@ -175,7 +175,7 @@ namespace GraphicsProgram
                 paramArray = ParamExtractArray(commandArray, typeArray);
 				checkParamRange(paramArray, commandStr);
             }
-			else { return null; }//will never run as command has already been checked but add global exception handling
+			else { return null; }
 
 			return paramArray;
 		}
@@ -245,7 +245,7 @@ namespace GraphicsProgram
                         throw new Exception("Colour: " + paramArray[0] + " not supported");
                     }
                 }
-				//only int params can get here and any int is in range just may not be visible if too big
+				//only int params can get here and any int is in range even when large
                 return true;
             }
 
@@ -255,7 +255,7 @@ namespace GraphicsProgram
 				return true; //All int params should be okay since the graphics can cut off parts out of range
 				//potentially add out of range for extremely large numbers
 			}
-			else { return false; }//Global Exception
+			else { return false; }
         }
 
         /// <summary>
@@ -268,7 +268,7 @@ namespace GraphicsProgram
         {
             try
             {
-                // Use Convert.ChangeType to attempt the conversion
+                
                 Convert.ChangeType(value, targetType);
                 return true;
             }
@@ -344,9 +344,9 @@ namespace GraphicsProgram
 			if (strCommand == "run")
 			{
 				if (GetSyntaxErrorArray().Length != 0) { throw new Exception("Errors in multi line program please use syntax button"); }
-				//Commands String Array Get done on button press
+				
 				RunMultiple(multilineText);
-				//Execute commands in for loop
+				
 			}
 
         }
@@ -423,7 +423,6 @@ namespace GraphicsProgram
 			{
                 MessageBox.Show("No Errors","Syntax Checker", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-            //return errorMessages;
         }
 
 		

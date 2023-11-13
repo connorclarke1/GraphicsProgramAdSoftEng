@@ -23,18 +23,15 @@ namespace GraphicsProgram
         }
 
         public int GetPointerXPos() 
-        //added x and y pos getters for faster processing if x is used only
         {
             return xpos;
         }
 
         public int GetPointerYPos()
-        //added x and y pos getters for faster processing if y is used only
         {
             return ypos;
         }
 
-        //maybe change to two integers see in actual implementation
         public void SetPointerPos(int[] posArray)
         {
             this.xpos = posArray[0];
