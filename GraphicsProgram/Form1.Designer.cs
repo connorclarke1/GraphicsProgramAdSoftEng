@@ -92,7 +92,7 @@
             Controls.Add(button1);
             Controls.Add(textBox1);
             Name = "Form1";
-            Text = "Form1";
+            Text = "Graphics Program";
             Load += Form1_Load;
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ResumeLayout(false);
