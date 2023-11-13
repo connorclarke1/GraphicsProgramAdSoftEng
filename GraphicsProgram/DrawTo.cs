@@ -26,12 +26,6 @@ namespace GraphicsProgram
             pointer.SetPointerXPos(endX);
             pointer.SetPointerYPos(endY);
 
-            //Set pointer x,y to new location
-            //int[] posArray = new int[2];
-            //posArray[0] = endX;
-            //posArray[1] = endY;
-            //pointer.setPointerPos(posArray);
-
 
         }
     }

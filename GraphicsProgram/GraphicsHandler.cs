@@ -17,6 +17,7 @@ namespace GraphicsProgram
         internal SolidBrush brush;
         public bool fill;
 
+
         //Graphics Handler initialisation - creates bitmap, clears it to be reset
         public GraphicsHandler(PictureBox pictureBox)
         {

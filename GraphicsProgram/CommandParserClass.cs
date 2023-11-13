@@ -11,16 +11,22 @@ namespace GraphicsProgram
 
 		public void setGraphicsHandler(GraphicsHandler g) { graphicsHandler = g; }
 		public void FullParse(string inCommand)
-		// returns array with command, and parameters, fully checked
-		//TODO change void to array so returns
-		//TODO take command from textbox
 		//TODO add try catch for exceptions 1) CommandExtract 2)ParamExtract
 		{
 			string[] splitCommand = CommandSplit(inCommand);
-			string strCommand = CommandExtract(splitCommand);
+			try { 
+			string strCommand = CommandExtract(splitCommand); 
 			object[] paramArray = ParamExtract(splitCommand, strCommand);
-			executeCommand(strCommand, paramArray);
-		}
+            executeCommand(strCommand, paramArray);
+			}
+			catch (Exception e) {
+				String errorMessage = "PlaceHolder";
+				errorMessage= e.Message;
+                MessageBox.Show(errorMessage, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            
+
+        }
 		public static string[] CommandSplit(String commandStr)
 		//Splits command into array of strings, splits at whitespace and removes empty enteries, e.g double spaces
 		//TODO make all lower case to avoid case issues
@@ -48,7 +54,7 @@ namespace GraphicsProgram
 			//commandArray[0] will always be command
 			if (commandArray.Length == 0)
 			{
-				throw new Exception("Command Array Null");
+				throw new Exception("Command Array Empty");
 			}
 			if (validCommands.Contains(commandArray[0].ToLower()))
 			{
@@ -57,14 +63,13 @@ namespace GraphicsProgram
 			}
 			else
 			{
-				throw new Exception("Invalid command");
+				throw new Exception("Invalid command: " + commandArray[0]);
 			}
 			
 		}
 
 		public static object[] ParamExtract(String[] commandArray, string commandStr)
 		//up to two parameters for each command
-		//TODO add error for params
 		//TODO create way to return parameters after checking
 		{
 			object[] paramArray;
@@ -74,25 +79,39 @@ namespace GraphicsProgram
 			String[] TwoIntParams = {"moveto", "drawto", "rectangle"};
 			String[] FourIntParams = { "triangle" };
 			String[] OneStrParams = {"colour", "fill"};
-			if (NoParams.Contains(commandStr)) 
+			if (NoParams.Contains(commandStr))
 			{
+				if (commandArray.Length != 1) { throw new Exception("Command: " + commandStr + " should have no parameters, " + (commandArray.Length - 1).ToString() + " given."); }
 				paramArray = ParamExtractArray(commandArray, new Type[0]);
 			}
-            else if (OneIntParams.Contains(commandStr))
-            {
+			else if (OneIntParams.Contains(commandStr))
+			{
+
+				if (commandArray.Length != 2) { throw new Exception("Command: " + commandStr + " should have one integer parameter, " + (commandArray.Length - 1).ToString() + " given."); }
+				if (!(int.TryParse(commandArray[1], out _))) { throw new Exception("Command: " + commandStr + " Non-int value invalid, Please use integers"); }
 				typeArray = new Type[1];
 				typeArray[0] = typeof(int);
-                paramArray = ParamExtractArray(commandArray, typeArray);
-            }
-            else if (TwoIntParams.Contains(commandStr))
-            {
-                typeArray = new Type[2];
+				paramArray = ParamExtractArray(commandArray, typeArray);
+			}
+			else if (TwoIntParams.Contains(commandStr))
+			{
+				if (commandArray.Length != 3) { throw new Exception("Command: " + commandStr + " should have two integer parameters, " + (commandArray.Length - 1).ToString() + " given."); }
+				for (int i =1; i < commandArray.Length; i++) 
+				{ 
+					if (!(int.TryParse(commandArray[i], out _))) { throw new Exception("Command: " + commandStr + " Non-int value at position " + i.ToString() + " invalid, Please use integers"); }
+				}
+				typeArray = new Type[2];
                 typeArray[0] = typeof(int);
                 typeArray[1] = typeof(int);
                 paramArray = ParamExtractArray(commandArray, typeArray);
             }
             else if (FourIntParams.Contains(commandStr))
             {
+                if (commandArray.Length != 5) { throw new Exception("Command: " + commandStr + " should have four integer parameters, " + (commandArray.Length - 1).ToString() + " given."); }
+                for (int i = 1; i < commandArray.Length; i++)
+                {
+                    if (!(int.TryParse(commandArray[i], out _))) { throw new Exception("Command: " + commandStr + " Non-int value at position " + i.ToString() + " invalid, Please use integers"); }
+                }
                 typeArray = new Type[4];
                 typeArray[0] = typeof(int);
                 typeArray[1] = typeof(int);
@@ -102,9 +121,11 @@ namespace GraphicsProgram
             }
             else if (OneStrParams.Contains(commandStr))
             {
-                typeArray = new Type[1];
+                if (commandArray.Length != 2) { throw new Exception("Command: " + commandStr + " should have one string parameter, " + (commandArray.Length - 1).ToString() + " given."); }
+				typeArray = new Type[1];
                 typeArray[0] = typeof(string);
                 paramArray = ParamExtractArray(commandArray, typeArray);
+				checkParamRange(paramArray, commandStr);
             }
 			else { return null; }//will never run as command has already been checked but add global exception handling
 
@@ -115,7 +136,7 @@ namespace GraphicsProgram
 		{
 			//TODO add range arrays, tuples for ints, list for strings
 			object[] paramArray;
-			if ((commandArray.Length - 1) != typeArray.Length) { return null; }//incorrect amount of params
+			if ((commandArray.Length - 1) != typeArray.Length) { throw new Exception("Internal Error: Incorrect Exceptions Parsed to ParamExtractArray"); }//incorrect amount of params
             paramArray = new object[commandArray.Length - 1];
 
             for (int i = 0; i < commandArray.Length - 1; i++)
@@ -158,7 +179,7 @@ namespace GraphicsProgram
                     }
                     else
                     {
-                        throw new Exception("Colour" + paramArray[0] + "not supported");
+                        throw new Exception("Colour: " + paramArray[0] + " not supported");
                     }
                 }
 				//only int params can get here and any int is in range just may not be visible if too big
@@ -263,6 +284,7 @@ namespace GraphicsProgram
 			}
 
         }
+
 
     }
 }
