@@ -19,6 +19,11 @@ namespace GraphicsProgram
 
 
         //Graphics Handler initialisation - creates bitmap, clears it to be reset
+        /// <summary>
+        /// Creates GraphicsHandler to handle all graphics draw on PictureBox
+        /// </summary>
+        /// <param name="pictureBox">PictureBox for drawing</param>
+        /// <returns>void</returns>
         public GraphicsHandler(PictureBox pictureBox)
         {
             this.pictureBox = pictureBox;

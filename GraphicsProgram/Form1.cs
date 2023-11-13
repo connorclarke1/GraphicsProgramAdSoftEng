@@ -39,12 +39,6 @@ namespace GraphicsProgram
 
         private void button2_Click(object sender, EventArgs e)
         {
-
-            //var graphics = Graphics.FromImage(pictureBox1.Image);
-            //Clear.ClearMethod(graphics);
-            //graphicsHandler.ClearTest();
-
-            //graphics.DrawLine(p, startX, startY, endX, endY);
             commandParser.SetMultilineText(textBox2.Text);
             commandParser.CheckSyntaxMessage();
         }
