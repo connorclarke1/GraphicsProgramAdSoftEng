@@ -203,10 +203,20 @@ namespace GraphicsProgram
 			return paramArray;
         }
 
-		public static bool checkParamRange(Object[] paramArray, string commandStr) 
+        /// <summary>
+        /// Checks Parameters are in range
+        /// <br/>Example:<br/> Call this method to confirm parameter is valid
+        ///     <code>
+        ///     checkParamRange("circle 50");
+        ///     </code>
+        /// This will return true
+        /// Parameters out of range will return false, for example fill yes, must be on or off
+        /// </summary>
+        /// <param name="paramArray">Full Param Array from ParamExtract</param>
+		/// <param name="commandStr">Command String from commandExtract</param>
+        /// <returns>Bool inRange</returns>
+        public static bool checkParamRange(Object[] paramArray, string commandStr) 
 		{
-			//All Params have been checked by this point, the are the correct type and length
-			//Add global exception handling
 			if (paramArray.Length == 0) { return true;}
             else if (paramArray[0] is String)
             //all commands only have one type of param, eg all ints or strings
@@ -248,6 +258,12 @@ namespace GraphicsProgram
 			else { return false; }//Global Exception
         }
 
+        /// <summary>
+        /// Returns a true or false for a values conversion possibility
+        /// </summary>
+        /// <param name="value">Value to attempt to convert</param>
+        /// <param name="targetType">Type to attempt to convert to</param>
+        /// <returns>Bool convertable</returns>
         static bool TryConvert(string value, Type targetType)
         {
             try
@@ -262,12 +278,23 @@ namespace GraphicsProgram
             }
         }
 
-		public void SetMultilineText(String text)
+        /// <summary>
+        /// Sets text from multiline box to be used
+        /// </summary>
+        /// <param name="text">Text from textbox</param>
+        /// <returns>void</returns>
+        public void SetMultilineText(String text)
 		{
 			multilineText = text;
 		}
 
-		public void executeCommand(String strCommand, object[] paramArray)
+        /// <summary>
+        /// Executes Command, takes commandStr once validated, executes necesarry code for command
+        /// </summary>
+        /// <param name="strCommand">Validated Command String</param>
+        /// <param name="paramArray">Validated parameter array for command</param>
+        /// <returns>void</returns>
+        public void executeCommand(String strCommand, object[] paramArray)
 		{
 			if (strCommand == "colour") 
 			{
@@ -324,7 +351,12 @@ namespace GraphicsProgram
 
         }
 
-		public void RunMultiple(String multilineText) 
+        /// <summary>
+        /// Runs multiple commands from multiple command textbox, splits text at line breakpoints
+        /// </summary>
+        /// <param name="multilineText">Text from multiline text box</param>
+        /// <returns>void</returns>
+        public void RunMultiple(String multilineText) 
 		{
 			if (multilineText == null)
 			{
@@ -338,7 +370,11 @@ namespace GraphicsProgram
 
         }
 
-		public String[] GetSyntaxErrorArray()
+        /// <summary>
+        /// Runs through multi line program and records syntax errors and lines
+        /// </summary>
+        /// <returns>String[] ArrayOfSyntaxErrors</returns>
+        public String[] GetSyntaxErrorArray()
 		{
 			if (multilineText == null)
 			{
@@ -365,7 +401,12 @@ namespace GraphicsProgram
 			}
 			return errorMessages;
 		}
-		public void CheckSyntaxMessage() {
+
+        /// <summary>
+        /// RCreates pop up box displaying syntax errors in multiline program, will also inform user if none present
+        /// </summary>
+        /// <returns>void</returns>
+        public void CheckSyntaxMessage() {
 
 			String[] errorMessages = GetSyntaxErrorArray();
 			if (multilineText.Length == 0)
