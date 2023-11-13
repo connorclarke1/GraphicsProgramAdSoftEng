@@ -7,6 +7,7 @@ namespace GraphicsProgram
 	public class CommandParser
 	{
 		GraphicsHandler? graphicsHandler;//add global exeption 
+		private String? multilineText;
 
 		public void setGraphicsHandler(GraphicsHandler g) { graphicsHandler = g; }
 		public void FullParse(string inCommand)
@@ -187,6 +188,11 @@ namespace GraphicsProgram
             }
         }
 
+		public void SetMultilineText(String text)
+		{
+			multilineText = text;
+		}
+
 		public void executeCommand(String strCommand, object[] paramArray)
 		{
 			if (strCommand == "colour") 
@@ -237,8 +243,23 @@ namespace GraphicsProgram
 			}
 			if (strCommand == "run")
 			{
-				//Commands String Array Get
-				//For length execute command
+				//Commands String Array Get done on button press
+				RunMultiple(multilineText);
+				//Execute commands in for loop
+			}
+
+        }
+
+		public void RunMultiple(String multilineText) 
+		{
+			if (multilineText == null)
+			{
+				throw new Exception("Nothing in multiple command text area");
+			}
+			String[] multiCommandArray = multilineText.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+			for (int i=0; i < multiCommandArray.Length; i++ )
+			{
+				FullParse(multiCommandArray[i]);
 			}
 
         }

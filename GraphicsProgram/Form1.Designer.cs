@@ -65,8 +65,9 @@
             // textBox2
             // 
             textBox2.Location = new Point(6, 12);
+            textBox2.Multiline = true;
             textBox2.Name = "textBox2";
-            textBox2.Size = new Size(352, 23);
+            textBox2.Size = new Size(377, 246);
             textBox2.TabIndex = 3;
             textBox2.TextChanged += textBox2_TextChanged;
             // 
