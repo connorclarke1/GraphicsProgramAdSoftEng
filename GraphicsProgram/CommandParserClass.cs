@@ -403,7 +403,7 @@ namespace GraphicsProgram
 		}
 
         /// <summary>
-        /// RCreates pop up box displaying syntax errors in multiline program, will also inform user if none present
+        /// Creates pop up box displaying syntax errors in multiline program, will also inform user if none present
         /// </summary>
         /// <returns>void</returns>
         public void CheckSyntaxMessage() {
