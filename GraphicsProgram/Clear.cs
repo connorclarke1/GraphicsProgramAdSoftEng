@@ -14,7 +14,7 @@ namespace GraphicsProgram
         ///     <code>
         ///     Clear.ClearMethod(graphicsHandler);
         ///     </code>
-        /// This will clear the bitmap image
+        /// This will clear the bitmap image on the display
         /// </summary>
         /// <param name="graphicsHandler">GraphicsHandler to be used.</param>
         /// <returns>void</returns>
