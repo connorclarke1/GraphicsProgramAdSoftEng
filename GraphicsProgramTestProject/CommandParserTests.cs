@@ -1,6 +1,8 @@
 using GraphicsProgram;
 using System.Drawing;
 using System.Windows.Forms;
+using System;
+
 
 namespace GraphicsProgramTestProject
 
@@ -22,7 +24,7 @@ namespace GraphicsProgramTestProject
 
             //Assert
             String[] actualSplitCommand;
-            actualSplitCommand = new string[]{"circle", "20"};
+            actualSplitCommand = new string[] { "circle", "20" };
             CollectionAssert.AreEqual(splitCommand, actualSplitCommand);
         }
 
@@ -40,7 +42,7 @@ namespace GraphicsProgramTestProject
 
             //Assert
             String[] actualSplitCommand;
-            actualSplitCommand = new string[] {"var", "y", "20+5" };
+            actualSplitCommand = new string[] { "var", "y", "20+5" };
             CollectionAssert.AreEqual(splitCommand, actualSplitCommand);
         }
 
@@ -66,7 +68,7 @@ namespace GraphicsProgramTestProject
         public void CommandExtract_GoodCommand_NoParams_Test()
         {
             //Arrange
-            String[] commandArray = new string[] {"moveto"};
+            String[] commandArray = new string[] { "moveto" };
 
 
             //Act
@@ -80,7 +82,7 @@ namespace GraphicsProgramTestProject
         public void CommandExtract_GoodCommand_Params_Test()
         {
             //Arrange
-            String[] commandArray = new string[] { "moveto" , "100", "500" ,"Extra", "unneeded"};
+            String[] commandArray = new string[] { "moveto", "100", "500", "Extra", "unneeded" };
 
 
             //Act
@@ -106,7 +108,7 @@ namespace GraphicsProgramTestProject
         public void CommandExtract_InvalidCommand_Test()
         {
             //Arrange
-            String[] commandArray = new string[] {"InvalidCommand", "params"};
+            String[] commandArray = new string[] { "InvalidCommand", "params" };
 
 
             //Act
@@ -118,7 +120,7 @@ namespace GraphicsProgramTestProject
         public void ParamExtract_NoParam_Test()
         {
             //Arrange
-            String[] commandArray = new string[] {"clear"};
+            String[] commandArray = new string[] { "clear" };
             String command = "clear";
             CommandParser commandParser = new CommandParser();
 
@@ -177,7 +179,7 @@ namespace GraphicsProgramTestProject
             CommandParser commandParser = new CommandParser();
 
             //Act
-            Object[] Params = new Object[] { 100 , 200};
+            Object[] Params = new Object[] { 100, 200 };
 
             //Assert
             CollectionAssert.AreEqual(Params, commandParser.ParamExtract(commandArray, command));
@@ -188,7 +190,7 @@ namespace GraphicsProgramTestProject
         public void ParamExtract_FourIntParam_Test()
         {
             //Arrange
-            String[] commandArray = new string[] { "triangle", "100", "200" , "500", "300"};
+            String[] commandArray = new string[] { "triangle", "100", "200", "500", "300" };
             String command = "triangle";
             CommandParser commandParser = new CommandParser();
 
@@ -211,7 +213,7 @@ namespace GraphicsProgramTestProject
             CommandParser commandParser = new CommandParser();
 
             //Act
-            Object[] Params = new Object[] {"on"};
+            Object[] Params = new Object[] { "on" };
 
             //Assert
             CollectionAssert.AreEqual(Params, commandParser.ParamExtract(commandArray, command));
@@ -221,12 +223,12 @@ namespace GraphicsProgramTestProject
         public void ParamExtract_VarParam_Test()
         {
             //Arrange
-            String[] commandArray = new string[] {"var", "x", "100+x-y" };
+            String[] commandArray = new string[] { "var", "x", "100+x-y" };
             String command = "var";
             CommandParser commandParser = new CommandParser();
 
             //Act
-            Object[] Params = new Object[] { "x" , "100+x-y"};
+            Object[] Params = new Object[] { "x", "100+x-y" };
 
             //Assert
             CollectionAssert.AreEqual(Params, commandParser.ParamExtract(commandArray, command));
@@ -236,7 +238,7 @@ namespace GraphicsProgramTestProject
         public void ParamExtract_VarLogicException_Test()
         {
             //Arrange
-            String[] commandArray = new string[] {"var","x", "100+x-y/" };
+            String[] commandArray = new string[] { "var", "x", "100+x-y/" };
             String command = "var";
             CommandParser commandParser = new CommandParser();
 
@@ -279,7 +281,7 @@ namespace GraphicsProgramTestProject
         public void CheckParamRange_Fill_On_Test()
         {
             //Arrange
-            Object[] paramArray = new Object[] {(String)"on"};
+            Object[] paramArray = new Object[] { (String)"on" };
             String command = "fill";
 
             //Act
@@ -291,7 +293,7 @@ namespace GraphicsProgramTestProject
         public void CheckParamRange_Fill_BadString_Test()
         {
             //Arrange
-            Object[] paramArray = new Object[] {(String)"BadString"};
+            Object[] paramArray = new Object[] { (String)"BadString" };
             String command = "fill";
 
             //Act
@@ -401,9 +403,9 @@ namespace GraphicsProgramTestProject
             string[] splitCommand = CommandParser.CommandSplit("x = 100+y");
             string strCommand = CommandParser.CommandExtract(splitCommand);
             object[] paramArray = commandParser.ParamExtract(splitCommand, strCommand);
-            
+
             //Assert
-            Assert.ThrowsException<System.Exception>(() => commandParser.executeCommand(strCommand, paramArray)) ;
+            Assert.ThrowsException<System.Exception>(() => commandParser.executeCommand(strCommand, paramArray));
         }
         [TestMethod]
         public void ParamExtract_withVariable_Test()
@@ -418,6 +420,82 @@ namespace GraphicsProgramTestProject
 
             CollectionAssert.AreEqual(paramArray, correctParamArray);
 
+        }
+
+        [TestMethod]
+        public void FullParse_LogicalIf_Tests()
+        {
+
+            string commandA = "x = 1000";
+            CommandParser commandParser = new CommandParser();
+            string commandB = "y = 100";
+            commandParser.FullParse(commandA);
+            commandParser.FullParse(commandB);
+            Assert.ThrowsException<System.Exception>(() => commandParser.FullParse("if x == y1"));
+            //Assert that inside if when they are correct
+            //no exception will be thrown
+        }
+
+        [TestMethod]
+        public void CheckParamRange_IF_Tests()
+        {
+            Type[] typeArray = new Type[2];
+            typeArray[0] = typeof(string);
+            typeArray[1] = typeof(string);
+            string[] paramArrayA = new string[] { "10", "20" };
+            string[] paramArrayB = new string[] { "x", "20" };
+            string[] paramArrayC = new string[] { "x12", "20" };
+
+            Assert.AreEqual(true, CommandParser.checkParamRange(paramArrayA, "if"));
+            Assert.AreEqual(true, CommandParser.checkParamRange(paramArrayB, "if"));
+            Assert.ThrowsException<System.Exception>(() => CommandParser.checkParamRange(paramArrayC, "if"));
+
+
+        }
+        [TestMethod]
+        public void ParamExtract_IF_Tests()
+        {
+            CommandParser commandParser = new CommandParser();
+            string inputStr = "if x == 12";
+            //commandParser.FullParse("x = 100");
+            string[] splitCommand = CommandParser.CommandSplit(inputStr);
+            string strCommand = CommandParser.CommandExtract(splitCommand);
+            object[] paramArray = commandParser.ParamExtract(splitCommand, strCommand);
+            Object[] correctParamArray = new Object[] { (string)"x", (string)"12" };
+
+            string inputStrB = "if x12 == 12";
+            //commandParser.FullParse("x = 100");
+            string[] splitCommandB = CommandParser.CommandSplit(inputStrB);
+            string strCommandB = CommandParser.CommandExtract(splitCommandB);
+            
+            
+
+
+
+
+
+            CollectionAssert.AreEqual(paramArray, correctParamArray);
+            Assert.ThrowsException<System.Exception>(() => commandParser.ParamExtract(splitCommandB, strCommandB));
+
+
+
+        }
+        [TestMethod]
+        public void ExecuteCommand_IF_Tests()
+        {
+            //need to change currently just pasted 
+            //need to include the setting of in if etc
+            PictureBox pictureBox = new PictureBox();
+            pictureBox.Image = (new Bitmap(100, 100));
+            GraphicsHandler graphicsHandler = new GraphicsHandler(pictureBox);
+            CommandParser commandParser = new CommandParser();
+            commandParser.setGraphicsHandler(graphicsHandler);
+
+            //Act
+            commandParser.FullParse("x = 100+5");
+
+            //Assert
+            Assert.AreEqual(105, commandParser.variableValues["x"]);
         }
 
     }

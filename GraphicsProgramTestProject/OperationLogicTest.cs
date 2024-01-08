@@ -165,7 +165,32 @@ namespace GraphicsProgramTestProject
             //Assert
             Assert.AreEqual(18, ExecuteLogic.Execute(myLogic, variableValues));
         }
+        [TestMethod]
+        public void CheckLogic_CheckVar_Tests()
+        {
+            string varA = "12";
+            string varB = "a";
+            string varC = "b12";
+            string varD = "ad]";
+            Assert.AreEqual(CheckLogic.checkVar(varA), true);
+            Assert.AreEqual(CheckLogic.checkVar(varB), true);
+            Assert.ThrowsException<System.Exception>(() => CheckLogic.checkVar(varC));
+            Assert.ThrowsException<System.Exception>(() => CheckLogic.checkVar(varD));
 
+
+        }
+        [TestMethod]
+        public void CheckLogic_LogicalStatements_Tests()
+        {
+            string statementA = "5+a+b";
+            string statementB = "5+a112+b";
+            string statementC = "5+a}}+b";
+            Assert.AreEqual(CheckLogic.Check(statementA, null), true);
+            Assert.ThrowsException<System.Exception>(() => CheckLogic.Check(statementB, null));
+            Assert.ThrowsException<System.Exception>(() => CheckLogic.Check(statementC, null));
+        }
+        
+        //logical statements with variables
 
 
 

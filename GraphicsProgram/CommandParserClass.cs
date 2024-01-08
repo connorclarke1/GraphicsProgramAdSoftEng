@@ -12,11 +12,15 @@ namespace GraphicsProgram
 		GraphicsHandler? graphicsHandler;
 		private String? multilineText;
         public Dictionary<string, int> variableValues;
+        private bool insideIf;
+        private bool ifBool;
 
         public CommandParser()
         {
             //Dictionary<string, int> 
             variableValues = new Dictionary<string, int>();
+            insideIf = false;
+            ifBool = false;
             //variableValues.Add("UnaccessablePlaceHolder1", 1000);
         }
 
@@ -102,19 +106,33 @@ namespace GraphicsProgram
 										"colour",
 										"fill",
 										"run",
-										"var"};
+										"var",
+                                        "if",
+                                        "while"};
 			if (commandArray.Length == 0)
 			{
 				throw new Exception("Command Array Empty");
 			}
 			if (validCommands.Contains(commandArray[0].ToLower()))
 			{
+                if (commandArray[0].ToLower() == "var")//if single = so treated as var
+                {
+                    if(string.Join("",commandArray).Contains("if") || string.Join("", commandArray).Contains("while"))
+                    {
+                        throw new Exception("Logic Statement(IF/WHILE) Statement must use ==");
+                    }
+                    //delete else below as never ran since if more than 1 = then not var
+                    else if (string.Join("",commandArray).Count(c => c == '=') > 2)
+                    {
+                        throw new Exception("Logic Statement IF/While has too many = please use ==");
+                    }
+                }
 				string commandExtracted = commandArray[0].ToLower();
 				return commandExtracted;
 			}
 			else
 			{
-                commandArray = commandArray;
+                
 				throw new Exception("Invalid command: " + commandArray[0]);
 			}
 			
@@ -153,6 +171,7 @@ namespace GraphicsProgram
 			String[] FourIntParams = { "triangle" };
 			String[] OneStrParams = {"colour", "fill"};
 			String[] TwoStrParams = {"var"};
+            String[] DoubleLogicalParams = {"if","while" };
 			if (NoParams.Contains(commandStr))
 			{
 				if (commandArray.Length != 1) { throw new Exception("Command: " + commandStr + " should have no parameters, " + (commandArray.Length - 1).ToString() + " given."); }
@@ -240,6 +259,24 @@ namespace GraphicsProgram
 				typeArray[1] = typeof(string);
                 paramArray = ParamExtractArray(commandArray, typeArray);
                 checkParamRange(paramArray, commandStr);
+            }
+            else if (DoubleLogicalParams.Contains(commandStr))
+            {
+                commandArray[0] = "";
+                string commandArrayStr = string.Join("", commandArray);
+                //if == exists
+                if (commandArrayStr.Contains("==") && commandArrayStr.Count(c => c == '=') == 2)
+                {
+                    //split at ==, return param array of 2 logic statements
+                    paramArray = commandArrayStr.Split("==");
+                    checkParamRange(paramArray, commandStr);
+                    //return paramArray;
+                }
+                else
+                {
+                    throw new Exception("If/While needs ==, " + commandArrayStr.Count(c => c == '=').ToString() + " found");
+                }
+
             }
             else { return null; }
 
@@ -335,6 +372,23 @@ namespace GraphicsProgram
                     }
 					
 				}
+                if (commandStr == "if" || commandStr == "while")
+                {
+                    //if (!ContainsInteger(paramArray[0].ToString()) || !ContainsInteger(paramArray[1].ToString())) {
+                        if (CheckLogic.Check((string)paramArray[0], null))
+                        {
+                            if (CheckLogic.Check((string)paramArray[1], null))
+                            {
+                                return true;
+                            }
+                        }
+                        else
+                        {
+                            throw new Exception("Logic error within statement");
+                        }
+                    //}
+
+                }
 				//only int params can get here and any int is in range even when large
                 return true;
             }

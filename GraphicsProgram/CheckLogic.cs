@@ -33,10 +33,17 @@ namespace GraphicsProgram
             if (splitLogic.Length % 2 == 0 ) { return false; }//if even then not in format
             for (int i = 0; i < splitLogic.Length; i += 2)//odd numbers are vars or ints
             {
+                
+                checkVar(splitLogic[i]);
                 if (!int.TryParse(splitLogic[i], out _))
                 {
                     //if the variable is not an integer check variables
                     //variables will be in dictionary
+                    //foreach(char c in splitLogic[i])
+                    //{
+                    ///   if (int.TryParse(c.ToString() ,out _)) { throw new Exception("Variables can not contain integers: Error with: " + splitLogic[i]); }
+                    //}
+                    
                     if (variableValues == null) { return true; } ;//if null fed in as variables then dont worry
                     if (!variableValues.ContainsKey(splitLogic[i])) { throw new Exception("Variable " + splitLogic[i] + " not set"); }
                 }
@@ -93,5 +100,29 @@ namespace GraphicsProgram
             }
             return splitLogic;
         }
+
+        public static bool checkVar(string var)
+        {
+            if (int.TryParse(var, out _))
+            {
+                //if integer varaible
+                return true;
+            }
+            else if(var.All(char.IsLetter))
+            {
+                //if var name only letters
+                return true;
+            }
+            else if (CommandParser.ContainsInteger(var))
+            {
+                throw new Exception("Error: Variable " + var + " contains integers and letters");
+            }
+            else
+            {
+                throw new Exception("Unrecognised Charater in " + var + " | Please only use letters");
+            }
+        }
     }
+
+
 }
