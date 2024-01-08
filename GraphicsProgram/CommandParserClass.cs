@@ -14,6 +14,11 @@ namespace GraphicsProgram
         public Dictionary<string, int> variableValues;
         private bool insideIf;
         public bool ifBool;
+        private int pointer;
+        private int whileStart;
+        private bool insideWhile;
+        private bool whileBool;
+        string[] whileLogic;
 
         public CommandParser()
         {
@@ -21,6 +26,11 @@ namespace GraphicsProgram
             variableValues = new Dictionary<string, int>();
             insideIf = false;
             ifBool = false;
+            pointer = 0;
+            whileStart = -1;//this will be used to check to see if while loop exists if not -1
+            whileBool = false;
+            insideWhile = false;
+            whileLogic =new string[] {"","" };
             //variableValues.Add("UnaccessablePlaceHolder1", 1000);
         }
 
@@ -37,7 +47,7 @@ namespace GraphicsProgram
         /// </summary>
         /// <param name="inCommand">Command and param String in</param>
         /// <returns>void</returns>
-        public void FullParse(string inCommand)
+        public void FullParse(string inCommand, int pointer = 0)
 		{
 			string[] splitCommand = CommandSplit(inCommand);
 			try { 
@@ -443,8 +453,22 @@ namespace GraphicsProgram
         public void executeCommand(String strCommand, object[] paramArray)
 		{
             //add endif before, if if false then end and reset
-            if (strCommand == "endif") { insideIf = false; ifBool = false; }
+            pointer++;
+            if (strCommand == "endwhile")
+            {
+                if (ExecuteLogic.Execute((string)whileLogic[0], variableValues) == ExecuteLogic.Execute((string)whileLogic[1], variableValues))
+                {
+                    pointer = whileStart;
+                    return;
+                }
+                whileBool = false;
+                insideWhile = false;
+                return;
+
+            }
+            if (strCommand == "endif") {insideIf = false; ifBool = false; }
             if (insideIf && !ifBool) { return; } //if inside if statement but not true
+            if (insideWhile && !whileBool) { return; }//if in while but not true
 			if (strCommand == "colour") 
 			{
 				String colourString = (String)(paramArray[0]);
@@ -523,6 +547,18 @@ namespace GraphicsProgram
                     //ifbool true
 
             }
+            if (strCommand == "while")
+            {
+                insideWhile = true;
+                whileBool = false;
+                whileStart = pointer;//increased by one so this is pointer to first command not WHILE
+                whileLogic[0] = (string)paramArray[0];
+                whileLogic[1] = (string)paramArray[1];
+                if (ExecuteLogic.Execute((string)paramArray[0], variableValues) == ExecuteLogic.Execute((string)paramArray[1], variableValues))
+                {
+                    whileBool = true;
+                }
+            }
 
         }
 
@@ -531,7 +567,7 @@ namespace GraphicsProgram
         /// </summary>
         /// <param name="multilineText">Text from multiline text box</param>
         /// <returns>void</returns>
-        public void RunMultiple(String multilineText) 
+        public void RunMultipleOld(String multilineText) 
 		{
 			if (multilineText == null)
 			{
@@ -542,6 +578,21 @@ namespace GraphicsProgram
 			{
 				FullParse(multiCommandArray[i]);
 			}
+
+        }
+
+        public void RunMultiple(String multilineText)
+        {
+            if (multilineText == null)
+            {
+                throw new Exception("Nothing in multiple command text area");
+            }
+            String[] multiCommandArray = multilineText.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+            pointer = 0;
+            while (pointer < multiCommandArray.Length)
+            {
+                FullParse(multiCommandArray[pointer]);
+            }
 
         }
 
@@ -574,6 +625,11 @@ namespace GraphicsProgram
 					errorMessages[errorMessages.Length - 1] = ("Line "+ (i+1).ToString() + ": " + e.Message);
 				}
 			}
+            if (insideIf)
+            {
+                Array.Resize(ref errorMessages, errorMessages.Length + 1);
+                errorMessages[errorMessages.Length - 1] = ("Unclosed IF Statement Please Use endif");
+            }
 			return errorMessages;
 		}
 
