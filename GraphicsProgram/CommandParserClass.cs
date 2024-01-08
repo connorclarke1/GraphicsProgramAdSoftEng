@@ -13,7 +13,7 @@ namespace GraphicsProgram
 		private String? multilineText;
         public Dictionary<string, int> variableValues;
         private bool insideIf;
-        private bool ifBool;
+        public bool ifBool;
 
         public CommandParser()
         {
@@ -108,7 +108,9 @@ namespace GraphicsProgram
 										"run",
 										"var",
                                         "if",
-                                        "while"};
+                                        "while",
+                                        "endif",
+                                        "endwhile"};
 			if (commandArray.Length == 0)
 			{
 				throw new Exception("Command Array Empty");
@@ -165,7 +167,7 @@ namespace GraphicsProgram
 		{
 			object[] paramArray;
 			Type[] typeArray;
-			String[] NoParams = { "clear", "reset","run" };
+			String[] NoParams = { "clear", "reset","run", "endif", "endwhile" };
 			String[] OneIntParams = {"circle"};
 			String[] TwoIntParams = {"moveto", "drawto", "rectangle"};
 			String[] FourIntParams = { "triangle" };
@@ -440,6 +442,9 @@ namespace GraphicsProgram
         /// <returns>void</returns>
         public void executeCommand(String strCommand, object[] paramArray)
 		{
+            //add endif before, if if false then end and reset
+            if (strCommand == "endif") { insideIf = false; ifBool = false; }
+            if (insideIf && !ifBool) { return; } //if inside if statement but not true
 			if (strCommand == "colour") 
 			{
 				String colourString = (String)(paramArray[0]);
@@ -506,6 +511,17 @@ namespace GraphicsProgram
                 ///update var to result of logic
                 ///
                 //this should create the key in the dictionary if not already there
+            }
+            if (strCommand == "if")
+            {
+                insideIf = true;
+                if (ExecuteLogic.Execute((string)paramArray[0], variableValues) == ExecuteLogic.Execute((string)paramArray[1], variableValues))
+                {
+                    ifBool = true;
+                }
+                //check if statement
+                    //ifbool true
+
             }
 
         }

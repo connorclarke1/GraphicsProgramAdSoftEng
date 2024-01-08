@@ -428,10 +428,12 @@ namespace GraphicsProgramTestProject
 
             string commandA = "x = 1000";
             CommandParser commandParser = new CommandParser();
-            string commandB = "y = 100";
+            string commandB = "y = 1000";
             commandParser.FullParse(commandA);
             commandParser.FullParse(commandB);
-            Assert.ThrowsException<System.Exception>(() => commandParser.FullParse("if x == y1"));
+            commandParser.FullParse("if x == y");
+            Assert.AreEqual(commandParser.ifBool, true);
+            //Assert.ThrowsException<System.Exception>(() => commandParser.FullParse("if x == y1"));
             //Assert that inside if when they are correct
             //no exception will be thrown
         }
