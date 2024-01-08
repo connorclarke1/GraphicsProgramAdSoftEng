@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Drawing.Text;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using System.Windows.Forms;
 
 namespace GraphicsProgram
 {
@@ -9,8 +11,16 @@ namespace GraphicsProgram
 	{
 		GraphicsHandler? graphicsHandler;
 		private String? multilineText;
+        public Dictionary<string, int> variableValues;
 
-		public void setGraphicsHandler(GraphicsHandler g) { graphicsHandler = g; }
+        public CommandParser()
+        {
+            //Dictionary<string, int> 
+            variableValues = new Dictionary<string, int>();
+            //variableValues.Add("UnaccessablePlaceHolder1", 1000);
+        }
+
+        public void setGraphicsHandler(GraphicsHandler g) { graphicsHandler = g; }
         /// <summary>
         ///  Attempts to execute a command
         /// <br/>Example:<br/> Call this method to draw a triangle onto the bitmap image
@@ -51,9 +61,22 @@ namespace GraphicsProgram
         /// <returns>String[] ArrayOfStrings</returns>
         public static string[] CommandSplit(String commandStr)
 		{
-			string[] parsedStr = commandStr.ToLower().Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
+			string[] parsedStr = new string[] { };
+			if (commandStr.Count(c => c == '=') == 1) 
+			{
+				parsedStr = commandStr.Split("="); 
+				//should only have 2 items in array
+				Array.Resize(ref parsedStr, parsedStr.Length + 1);//should be 2 -> 3
+				parsedStr[2] = RemoveWhitespace(parsedStr[1]);
+				parsedStr[1] = RemoveWhitespace(parsedStr[0]);
+				parsedStr[0] = "var";
+				//increase size by one, make [0] "var" for use in rest of parser
+			}//while loops etc have double equals
+			else {parsedStr = commandStr.ToLower().Split(new char[0], StringSplitOptions.RemoveEmptyEntries); }
 			return parsedStr;
 		}
+
+
 
         /// <summary>
         /// Extracts command from first position in array of split strings
@@ -78,7 +101,8 @@ namespace GraphicsProgram
 										"triangle",
 										"colour",
 										"fill",
-										"run"};
+										"run",
+										"var"};
 			if (commandArray.Length == 0)
 			{
 				throw new Exception("Command Array Empty");
@@ -90,6 +114,7 @@ namespace GraphicsProgram
 			}
 			else
 			{
+                commandArray = commandArray;
 				throw new Exception("Invalid command: " + commandArray[0]);
 			}
 			
@@ -118,7 +143,7 @@ namespace GraphicsProgram
         /// <param name="commandArray">Full Command Array from SplitCommand</param>
 		/// <param name="commandStr">Command String from ExtractCommand</param>
         /// <returns>object[] ArrayOfParamObjects</returns>
-        public static object[] ParamExtract(String[] commandArray, string commandStr)
+        public object[] ParamExtract(String[] commandArray, string commandStr)
 		{
 			object[] paramArray;
 			Type[] typeArray;
@@ -127,6 +152,7 @@ namespace GraphicsProgram
 			String[] TwoIntParams = {"moveto", "drawto", "rectangle"};
 			String[] FourIntParams = { "triangle" };
 			String[] OneStrParams = {"colour", "fill"};
+			String[] TwoStrParams = {"var"};
 			if (NoParams.Contains(commandStr))
 			{
 				if (commandArray.Length != 1) { throw new Exception("Command: " + commandStr + " should have no parameters, " + (commandArray.Length - 1).ToString() + " given."); }
@@ -136,7 +162,18 @@ namespace GraphicsProgram
 			{
 
 				if (commandArray.Length != 2) { throw new Exception("Command: " + commandStr + " should have one integer parameter, " + (commandArray.Length - 1).ToString() + " given."); }
-				if (!(int.TryParse(commandArray[1], out _))) { throw new Exception("Command: " + commandStr + " Non-int value invalid, Please use integers"); }
+                if (!(int.TryParse(commandArray[1], out _)))
+                {
+                    //if variable exists then fine
+                    if (variableValues.ContainsKey(commandArray[1]))
+                    {
+                        commandArray[1] = variableValues.GetValueOrDefault(commandArray[1], 0).ToString();
+                    }
+                    else
+                    {
+                        throw new Exception("Command: " + commandStr + " Non-int value invalid, Please use integers or assigned variables");
+                    }
+                }
 				typeArray = new Type[1];
 				typeArray[0] = typeof(int);
 				paramArray = ParamExtractArray(commandArray, typeArray);
@@ -146,7 +183,17 @@ namespace GraphicsProgram
 				if (commandArray.Length != 3) { throw new Exception("Command: " + commandStr + " should have two integer parameters, " + (commandArray.Length - 1).ToString() + " given."); }
 				for (int i =1; i < commandArray.Length; i++) 
 				{ 
-					if (!(int.TryParse(commandArray[i], out _))) { throw new Exception("Command: " + commandStr + " Non-int value at position " + i.ToString() + " invalid, Please use integers"); }
+					if (!(int.TryParse(commandArray[i], out _))) 
+                    {
+                        if (variableValues.ContainsKey(commandArray[i]))
+                        {
+                            commandArray[i] = variableValues.GetValueOrDefault(commandArray[i], 0).ToString();
+                        }
+                        else
+                        {
+                            throw new Exception("Command: " + commandStr + " Non-int value at position " + i.ToString() + " invalid, Please use integers of assigned variables");
+                        }
+                    }
 				}
 				typeArray = new Type[2];
                 typeArray[0] = typeof(int);
@@ -158,7 +205,17 @@ namespace GraphicsProgram
                 if (commandArray.Length != 5) { throw new Exception("Command: " + commandStr + " should have four integer parameters, " + (commandArray.Length - 1).ToString() + " given."); }
                 for (int i = 1; i < commandArray.Length; i++)
                 {
-                    if (!(int.TryParse(commandArray[i], out _))) { throw new Exception("Command: " + commandStr + " Non-int value at position " + i.ToString() + " invalid, Please use integers"); }
+                    if (!(int.TryParse(commandArray[i], out _)))
+                    {
+                        if (variableValues.ContainsKey(commandArray[i]))
+                        {
+                            commandArray[i] = variableValues.GetValueOrDefault(commandArray[i], 0).ToString();
+                        }
+                        else 
+                        { 
+                        throw new Exception("Command: " + commandStr + " Non-int value at position " + i.ToString() + " invalid, Please use integers or assigned variable");
+                        }
+                    }
                 }
                 typeArray = new Type[4];
                 typeArray[0] = typeof(int);
@@ -175,7 +232,16 @@ namespace GraphicsProgram
                 paramArray = ParamExtractArray(commandArray, typeArray);
 				checkParamRange(paramArray, commandStr);
             }
-			else { return null; }
+            else if (TwoStrParams.Contains(commandStr))
+            {
+                if (commandArray.Length != 3) { throw new Exception("Invalid Variable assignment"); }
+                typeArray = new Type[2];
+                typeArray[0] = typeof(string);
+				typeArray[1] = typeof(string);
+                paramArray = ParamExtractArray(commandArray, typeArray);
+                checkParamRange(paramArray, commandStr);
+            }
+            else { return null; }
 
 			return paramArray;
 		}
@@ -193,7 +259,8 @@ namespace GraphicsProgram
             paramArray = new object[commandArray.Length - 1];
 
             for (int i = 0; i < commandArray.Length - 1; i++)
-            {
+            {	
+				//only need to check int 
                 if (!TryConvert(commandArray[i+1], typeArray[i]))
                 {
 					throw new Exception("Parameter Conversion to Int Failed");
@@ -245,6 +312,29 @@ namespace GraphicsProgram
                         throw new Exception("Colour: " + paramArray[0] + " not supported");
                     }
                 }
+				if (commandStr == "var")
+				{
+					//if paramArray[0] has no integers
+					if (!ContainsInteger(paramArray[0].ToString()))
+                    {
+                        //if paramArray[1] checkLogic
+                        if (CheckLogic.Check(paramArray[1].ToString(), null)) 
+                        {
+                            return true;
+                        }
+                        //else exception
+                        else
+                        {
+                            throw new Exception("Invalid Logic when setting variable");
+                        }
+                    }
+                    //else exception
+                    else
+                    {
+                        throw new Exception("Variable name must not contain integer");
+                    }
+					
+				}
 				//only int params can get here and any int is in range even when large
                 return true;
             }
@@ -348,6 +438,21 @@ namespace GraphicsProgram
 				RunMultiple(multilineText);
 				
 			}
+            if (strCommand == "var")
+            {
+                //check if var in dictionary
+                if (variableValues.ContainsKey((string)paramArray[0])) { variableValues[(string)paramArray[0]] = ExecuteLogic.Execute((string)paramArray[1],variableValues); }
+                //update var to result of logic
+                //else
+                else { variableValues.Add((string)paramArray[0], ExecuteLogic.Execute((string)paramArray[1], variableValues)); }
+                //string logicStr = (string)paramArray[1];
+                //int result = ExecuteLogic.Execute((string)paramArray[1], variableValues);
+                //variableValues[(string)paramArray[0]] = ExecuteLogic.Execute((string)paramArray[1], variableValues);
+                ///create var in dict
+                ///update var to result of logic
+                ///
+                //this should create the key in the dictionary if not already there
+            }
 
         }
 
@@ -425,7 +530,24 @@ namespace GraphicsProgram
             }
         }
 
-		
+        public static string RemoveWhitespace(string input)
+        {
+            return new string(input.ToCharArray()
+                .Where(c => !Char.IsWhiteSpace(c))
+                .ToArray());
+        }
+
+        public static bool ContainsInteger(string input)
+        {
+            foreach (char c in input)
+            {
+                if (int.TryParse(c.ToString(), out _))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
 
 
     }

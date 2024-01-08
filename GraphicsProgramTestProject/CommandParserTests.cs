@@ -14,7 +14,7 @@ namespace GraphicsProgramTestProject
             //Arrange
             //CommandParser commandParser = new CommandParser(); static so no need to create
             String command = "Circle 20";
-
+            CommandParser commandParser = new CommandParser();
 
             //Act
             String[] splitCommand;
@@ -25,6 +25,25 @@ namespace GraphicsProgramTestProject
             actualSplitCommand = new string[]{"circle", "20"};
             CollectionAssert.AreEqual(splitCommand, actualSplitCommand);
         }
+
+        [TestMethod]
+        public void CommandSplit_Var_Good_Test()
+        {
+            //Arrange
+            //CommandParser commandParser = new CommandParser(); static so no need to create
+            String command = "y = 20+5";
+
+
+            //Act
+            String[] splitCommand;
+            splitCommand = CommandParser.CommandSplit(command);
+
+            //Assert
+            String[] actualSplitCommand;
+            actualSplitCommand = new string[] {"var", "y", "20+5" };
+            CollectionAssert.AreEqual(splitCommand, actualSplitCommand);
+        }
+
         [TestMethod]
         public void CommandSplit_ExtraSpaces_Test()
         {
@@ -101,12 +120,13 @@ namespace GraphicsProgramTestProject
             //Arrange
             String[] commandArray = new string[] {"clear"};
             String command = "clear";
+            CommandParser commandParser = new CommandParser();
 
             //Act
             Object[] Params = new object[] { };
 
             //Assert
-            CollectionAssert.AreEqual(Params, CommandParser.ParamExtract(commandArray, command));
+            CollectionAssert.AreEqual(Params, commandParser.ParamExtract(commandArray, command));
         }
         [TestMethod]
         public void ParamExtract_NoParamWhenNeeded_Test()
@@ -114,11 +134,12 @@ namespace GraphicsProgramTestProject
             //Arrange
             String[] commandArray = new string[] { "circle" };
             String command = "circle";
+            CommandParser commandParser = new CommandParser();
 
             //Act
 
             //Assert
-            Assert.ThrowsException<System.Exception>(() => CommandParser.ParamExtract(commandArray, command));
+            Assert.ThrowsException<System.Exception>(() => commandParser.ParamExtract(commandArray, command));
         }
         [TestMethod]
         public void ParamExtract_OneIntParam_WithStringInstead_Test()
@@ -126,10 +147,11 @@ namespace GraphicsProgramTestProject
             //Arrange
             String[] commandArray = new string[] { "circle", "one" };
             String command = "circle";
+            CommandParser commandParser = new CommandParser();
 
 
             //Assert
-            Assert.ThrowsException<System.Exception>(() => CommandParser.ParamExtract(commandArray, command));
+            Assert.ThrowsException<System.Exception>(() => commandParser.ParamExtract(commandArray, command));
         }
         [TestMethod]
         public void ParamExtract_OneIntParam_Test()
@@ -137,12 +159,13 @@ namespace GraphicsProgramTestProject
             //Arrange
             String[] commandArray = new string[] { "circle", "100" };
             String command = "circle";
+            CommandParser commandParser = new CommandParser();
 
             //Act
             Object[] Params = new Object[] { 100 };
 
             //Assert
-            CollectionAssert.AreEqual(Params, CommandParser.ParamExtract(commandArray, command));
+            CollectionAssert.AreEqual(Params, commandParser.ParamExtract(commandArray, command));
             Assert.IsInstanceOfType(Params[0], typeof(int));
         }
         [TestMethod]
@@ -151,12 +174,13 @@ namespace GraphicsProgramTestProject
             //Arrange
             String[] commandArray = new string[] { "drawto", "100", "200" };
             String command = "drawto";
+            CommandParser commandParser = new CommandParser();
 
             //Act
             Object[] Params = new Object[] { 100 , 200};
 
             //Assert
-            CollectionAssert.AreEqual(Params, CommandParser.ParamExtract(commandArray, command));
+            CollectionAssert.AreEqual(Params, commandParser.ParamExtract(commandArray, command));
             Assert.IsInstanceOfType(Params[0], typeof(int));
             Assert.IsInstanceOfType(Params[1], typeof(int));
         }
@@ -166,12 +190,13 @@ namespace GraphicsProgramTestProject
             //Arrange
             String[] commandArray = new string[] { "triangle", "100", "200" , "500", "300"};
             String command = "triangle";
+            CommandParser commandParser = new CommandParser();
 
             //Act
             Object[] Params = new Object[] { 100, 200, 500, 300 };
 
             //Assert
-            CollectionAssert.AreEqual(Params, CommandParser.ParamExtract(commandArray, command));
+            CollectionAssert.AreEqual(Params, commandParser.ParamExtract(commandArray, command));
             Assert.IsInstanceOfType(Params[0], typeof(int));
             Assert.IsInstanceOfType(Params[1], typeof(int));
             Assert.IsInstanceOfType(Params[2], typeof(int));
@@ -183,14 +208,61 @@ namespace GraphicsProgramTestProject
             //Arrange
             String[] commandArray = new string[] { "fill", "on" };
             String command = "fill";
+            CommandParser commandParser = new CommandParser();
 
             //Act
             Object[] Params = new Object[] {"on"};
 
             //Assert
-            CollectionAssert.AreEqual(Params, CommandParser.ParamExtract(commandArray, command));
+            CollectionAssert.AreEqual(Params, commandParser.ParamExtract(commandArray, command));
             Assert.IsInstanceOfType(Params[0], typeof(string));
         }
+        [TestMethod]
+        public void ParamExtract_VarParam_Test()
+        {
+            //Arrange
+            String[] commandArray = new string[] {"var", "x", "100+x-y" };
+            String command = "var";
+            CommandParser commandParser = new CommandParser();
+
+            //Act
+            Object[] Params = new Object[] { "x" , "100+x-y"};
+
+            //Assert
+            CollectionAssert.AreEqual(Params, commandParser.ParamExtract(commandArray, command));
+            Assert.IsInstanceOfType(Params[0], typeof(string));
+        }
+        [TestMethod]
+        public void ParamExtract_VarLogicException_Test()
+        {
+            //Arrange
+            String[] commandArray = new string[] {"var","x", "100+x-y/" };
+            String command = "var";
+            CommandParser commandParser = new CommandParser();
+
+            //Act
+
+
+
+            //Assert
+            Assert.ThrowsException<System.Exception>(() => commandParser.ParamExtract(commandArray, command));
+        }
+        [TestMethod]
+        public void ParamExtract_ParamIntException_Test()
+        {
+            //Arrange
+            String[] commandArray = new string[] { "var", "x12y", "100+x-y" };
+            String command = "var";
+            CommandParser commandParser = new CommandParser();
+
+            //Act
+
+
+            //Assert
+            Assert.ThrowsException<System.Exception>(() => commandParser.ParamExtract(commandArray, command));
+        }
+
+
         [TestMethod]
         public void CheckParamRangeNoParam_Test()
         {
@@ -281,5 +353,72 @@ namespace GraphicsProgramTestProject
             //Assert
             Assert.AreEqual(true, graphicsHandler.fill);
         }
+        [TestMethod]
+        public void ExecuteCommand_VarSetWorking_Test()
+        {
+            //Arrange
+            PictureBox pictureBox = new PictureBox();
+            pictureBox.Image = (new Bitmap(100, 100));
+            GraphicsHandler graphicsHandler = new GraphicsHandler(pictureBox);
+            CommandParser commandParser = new CommandParser();
+            commandParser.setGraphicsHandler(graphicsHandler);
+
+            //Act
+            commandParser.FullParse("x = 100+5");
+
+            //Assert
+            Assert.AreEqual(105, commandParser.variableValues["x"]);
+        }
+        [TestMethod]
+        public void ExecuteCommand_VarUpdateX_Test()
+        {
+            //Arrange
+            PictureBox pictureBox = new PictureBox();
+            pictureBox.Image = (new Bitmap(100, 100));
+            GraphicsHandler graphicsHandler = new GraphicsHandler(pictureBox);
+            CommandParser commandParser = new CommandParser();
+            commandParser.setGraphicsHandler(graphicsHandler);
+
+            //Act
+            commandParser.FullParse("x = 100+5");
+            commandParser.FullParse("x = x + 100");
+
+            //Assert
+            Assert.AreEqual(205, commandParser.variableValues["x"]);
+        }
+        [TestMethod]
+        public void ExecuteCommand_Var_VarDoesntExist_Test()
+        {
+            //Arrange
+            PictureBox pictureBox = new PictureBox();
+            pictureBox.Image = (new Bitmap(100, 100));
+            GraphicsHandler graphicsHandler = new GraphicsHandler(pictureBox);
+            CommandParser commandParser = new CommandParser();
+            commandParser.setGraphicsHandler(graphicsHandler);
+
+            //Act
+            //commandParser.FullParse("x = 100+y");
+            string[] splitCommand = CommandParser.CommandSplit("x = 100+y");
+            string strCommand = CommandParser.CommandExtract(splitCommand);
+            object[] paramArray = commandParser.ParamExtract(splitCommand, strCommand);
+            
+            //Assert
+            Assert.ThrowsException<System.Exception>(() => commandParser.executeCommand(strCommand, paramArray)) ;
+        }
+        [TestMethod]
+        public void ParamExtract_withVariable_Test()
+        {
+            CommandParser commandParser = new CommandParser();
+            string commandStr = "circle x";
+            commandParser.FullParse("x = 100");
+            string[] splitCommand = CommandParser.CommandSplit(commandStr);
+            string strCommand = CommandParser.CommandExtract(splitCommand);
+            object[] paramArray = commandParser.ParamExtract(splitCommand, strCommand);
+            Object[] correctParamArray = new Object[] { (int)100 };
+
+            CollectionAssert.AreEqual(paramArray, correctParamArray);
+
+        }
+
     }
 }
