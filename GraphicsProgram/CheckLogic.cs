@@ -12,10 +12,17 @@ namespace GraphicsProgram
     public class CheckLogic
     {
         private static string[] operations = new string[] { "+", "-", "/", "*" };
-        
 
 
-        
+
+        /// <summary>
+        /// Checks logic statement is valid
+        /// If given dictionary of values, will check that vars exist
+        /// Otherwise will just check var names valid
+        /// </summary>
+        /// <param name="logicStr">Logic to be check String</param>
+        /// <param name="variableValues">Dictionary of variables, null if not checking variables exist</param>
+        /// <returns>void</returns>
         public static bool Check(string logicStr, Dictionary<string, int> variableValues)
         {
             //remove whitespace
@@ -38,6 +45,11 @@ namespace GraphicsProgram
             return true;
         }
 
+        /// <summary>
+        /// Returns a String array of string split at operations
+        /// </summary>
+        /// <param name="logicStr">Logic String to be split</param>
+        /// <returns>String[]</returns>
         public static string[] splitAtOperations(string logicStr)
         {
             string[] splitLogic = new string[] { };
@@ -85,7 +97,11 @@ namespace GraphicsProgram
             }
             return splitLogic;
         }
-
+        /// <summary>
+        /// Checks if variable is int or valid variable name, e.g. no numbers in it
+        /// </summary>
+        /// <param name="var">String of var to be checked e.g. "1000" or "myVar"</param>
+        /// <returns>bool</returns>
         public static bool checkVar(string var)
         {
             if (int.TryParse(var, out _))

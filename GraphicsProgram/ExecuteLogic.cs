@@ -9,6 +9,13 @@ namespace GraphicsProgram
 {
     public class ExecuteLogic
     {
+        /// <summary>
+        /// Executes Mathematical Statement
+        /// Takes Dictionary of Variables
+        /// </summary>
+        /// <param name="logicStr">Mathematics to be executed</param>
+        /// <param name="variableValues">Dictionary of variables, null if not checking variables exist</param>
+        /// <returns>int result</returns>
         public static int Execute(string logicStr, Dictionary<string, int> variableValues)
         {
             string[] splitLogic = CheckLogic.splitAtOperations(logicStr);
@@ -39,6 +46,13 @@ namespace GraphicsProgram
             return currentValue;
         }
 
+        /// <summary>
+        /// Executes operation on two ints with operator string
+        /// </summary>
+        /// <param name="a">int value on the left of operator</param>
+        /// <param name="b">int value on the right of operator</param>
+        /// <param name="operatorStr">Operator to be executed e.g. >= </param>
+        /// <returns>bool result</returns>
         public static bool executeInequality(int a, int b, string operatorStr)
         {
             

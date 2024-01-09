@@ -831,6 +831,10 @@
             resetAllInternalVars();
         }
 
+        /// <summary>
+        /// Resets all internal values
+        /// </summary>
+        /// <returns>void</returns>
         private void resetAllInternalVars()
         {
             variableValues = new Dictionary<string, int>();
