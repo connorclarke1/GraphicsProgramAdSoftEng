@@ -146,7 +146,9 @@
                                         "endwhile",
                                         "method",
                                         "endmethod",
-                                        "wait"};
+                                        "wait",
+                                        "save",
+                                        "load"};
 			if (commandArray.Length == 0)
 			{
 				throw new Exception("Command Array Empty");
@@ -216,7 +218,7 @@
 			String[] OneIntParams = {"circle", "wait"};
 			String[] TwoIntParams = {"moveto", "drawto", "rectangle"};
 			String[] FourIntParams = { "triangle" };
-			String[] OneStrParams = {"colour", "fill"};
+			String[] OneStrParams = {"colour", "fill", "save", "load"};
             String[] OneVariablesParam =  {"method", "methodex"}; //check if errors
 			String[] TwoStrParams = {"var"};
             String[] DoubleLogicalParams = {"if","while" };
@@ -502,13 +504,15 @@
                         //else variable name issue
                         //set variables to vars given
                     
-
+                    
                     
                     return true;
 
                 }
-                
+                if (commandStr == "save" || commandStr == "load") { return true; }
+
                 //only int params can get here and any int is in range even when large
+                //or file name on save
                 return true;
             }
 
@@ -602,6 +606,17 @@
                 intArray[1] = (int)paramArray[1];
                 graphicsHandler.pointer.SetPointerPos(intArray);
 			}
+
+            if (strCommand == "save") 
+            { 
+                File.WriteAllText(Path.Combine(Environment.CurrentDirectory, (string)paramArray[0]), multilineText);
+            }
+
+            if (strCommand == "load")
+            {
+                string fileText = File.ReadAllText(Path.Combine(Environment.CurrentDirectory, (string)paramArray[0]));
+                RunMultiple(fileText);
+            }
             
             if (strCommand == "drawto")
             {
@@ -629,7 +644,7 @@
 				Circle.Draw(graphicsHandler, (int)paramArray[0]);
 			}
             if (strCommand == "wait") { 
-                if (!checkingSyntax) { Thread.Sleep((int)paramArray[0] * 1000); }
+                if (!checkingSyntax) { Thread.Sleep((int)paramArray[0]); }
                 
             }
             if (strCommand == "rectangle")
@@ -683,7 +698,7 @@
             {
                 insideWhile = true;
                 whileBool = false;
-                whileStart = pointer;//increased by one so this is pointer to first command not WHILE
+                whileStart = pointer - 1;//increased by one so this is pointer to first command not WHILE CHANGED to -1 so while is executed again
                 whileLogic[0] = (string)paramArray[0];
                 whileLogic[1] = (string)paramArray[1];
                 whileLogic[2] = (string)paramArray[2];
