@@ -537,6 +537,44 @@ namespace GraphicsProgramTestProject
             
 
         }
+
+        [TestMethod]
+        public void ParamExtract_If_Tests()
+        {
+            CommandParser commandParser = new CommandParser();
+            string commandStrA = "if x > 1";
+            string commandStrB = "if x == 2";
+            string commandStrC = "if x <= 3";
+
+            string[] commandSplitA = CommandParser.CommandSplit(commandStrA);
+            string[] commandSplitB = CommandParser.CommandSplit(commandStrB);
+            string[] commandSplitC = CommandParser.CommandSplit(commandStrC);
+
+            string strCommandA = commandParser.CommandExtract(commandSplitA);
+            string strCommandB = commandParser.CommandExtract(commandSplitB);
+            string strCommandC = commandParser.CommandExtract(commandSplitC);
+
+            object[] paramArrayA = commandParser.ParamExtract(commandSplitA, strCommandA);
+            object[] paramArrayB = commandParser.ParamExtract(commandSplitB, strCommandB);
+            object[] paramArrayC = commandParser.ParamExtract(commandSplitC, strCommandC);
+
+
+
+
+            object[] paramArrayAActual = new object[] { (string)"x", (string)"1", (string)">" };
+            object[] paramArrayBActual = new object[] { (string)"x", (string)"2", (string)"==" };
+            object[] paramArrayCActual = new object[] { (string)"x", (string)"3", (string)"<=" };
+
+
+
+            Assert.AreEqual("if", strCommandA);
+            Assert.AreEqual("if", strCommandB);
+            Assert.AreEqual("if", strCommandC);
+            CollectionAssert.AreEqual(paramArrayA, paramArrayAActual);
+            CollectionAssert.AreEqual(paramArrayB, paramArrayBActual);
+            CollectionAssert.AreEqual(paramArrayC, paramArrayCActual);
+
+        }
         [TestMethod]
         public void FullParse_MethodVarNames_Test()
         {
@@ -712,10 +750,43 @@ namespace GraphicsProgramTestProject
         }
 
         [TestMethod]
+        public void MethodUseWithinWhile_Test()
+        {
+            
+
+            string multiLineText =
+                         "circle 50" + Environment.NewLine +
+                        "circle 20" + Environment.NewLine +
+                        "method test" + Environment.NewLine +
+                       "moveto 50 50" + Environment.NewLine +
+                       "endmethod" + Environment.NewLine +
+                       "test";
+            CommandParser commandParser = new CommandParser();
+            PictureBox p = new PictureBox();
+            GraphicsHandler graphicsHandler = new GraphicsHandler(p);
+            commandParser.setGraphicsHandler(graphicsHandler);
+
+
+            commandParser.RunMultiple(multiLineText);
+
+            Dictionary<string, int> varNamesArray = commandParser.getMethodVars();
+
+            //Assert.AreEqual(varNamesArray.GetValueOrDefault("a"), 10);
+            //run multiple resets all vars on completion
+        }
+
+        [TestMethod]
         public void FullParse_MethodSet_Test()
         {
 
         }
+
+        [TestMethod]
+        public void NestedWhileInMethodIndexErrorLocation_Test()
+        {
+
+        }
+
         [TestMethod]
         public void FullParse_MethodNoParamsRun_Test()
         {

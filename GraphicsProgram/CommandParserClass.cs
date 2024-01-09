@@ -97,7 +97,7 @@
         public static string[] CommandSplit(String commandStr)
 		{
 			string[] parsedStr = new string[] { };
-			if (commandStr.Count(c => c == '=') == 1) 
+			if (commandStr.Count(c => c == '=') == 1 && commandStr.Count(c => c == '<') == 0 && commandStr.Count(c => c == '>') == 0) 
 			{
 				parsedStr = commandStr.Split("="); 
 				//should only have 2 items in array
@@ -560,7 +560,10 @@
             pointer++;
             if (strCommand == "endwhile")
             {
-                if (ExecuteLogic.executeInequality(ExecuteLogic.Execute((string)whileLogic[0], variableValues), ExecuteLogic.Execute((string)whileLogic[1], variableValues), (string)whileLogic[2]))
+                Dictionary<string, int> selectedVariableValues;
+                if (inMethod) { selectedVariableValues = methodVars; }
+                else { selectedVariableValues = variableValues; }
+                if (ExecuteLogic.executeInequality(ExecuteLogic.Execute((string)whileLogic[0], selectedVariableValues), ExecuteLogic.Execute((string)whileLogic[1], selectedVariableValues), (string)whileLogic[2]))
                 {
                     pointer = whileStart;
                     return;
@@ -807,7 +810,7 @@
 				{   
 
 					string strCommand = CommandExtract(splitCommand);
-                    if (!methodCreation)
+                    if (!methodCreation && strCommand != "methodex")
                     {
                         object[] paramArray = ParamExtract(splitCommand, strCommand);
                         executeCommand(strCommand, paramArray);
