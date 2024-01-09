@@ -51,6 +51,7 @@
             methodCreation = false;
             currentMethod = "";
             settingMethod = "";
+            
             //variableValues.Add("UnaccessablePlaceHolder1", 1000);
         }
 
@@ -847,6 +848,11 @@
             methodCreation = false;
             currentMethod = "";
             settingMethod = "";
+            graphicsHandler.SetColour(StringToColour.Convert("black"));
+            graphicsHandler.SetFill(false);
+            graphicsHandler.pointer.SetPointerXPos(0);
+            graphicsHandler.pointer.SetPointerYPos(0);
+
         }
 
         public static string RemoveWhitespace(string input)
