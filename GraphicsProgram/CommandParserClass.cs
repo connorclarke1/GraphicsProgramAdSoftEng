@@ -1,13 +1,7 @@
-﻿using System;
-using System.Drawing.Text;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Windows.Forms;
-
-namespace GraphicsProgram
+﻿namespace GraphicsProgram
 {
 
-	public class CommandParser
+    public class CommandParser
 	{
 		GraphicsHandler? graphicsHandler;
 		private String? multilineText;
@@ -18,19 +12,45 @@ namespace GraphicsProgram
         private int whileStart;
         private bool insideWhile;
         private bool whileBool;
-        string[] whileLogic;
+        private string[] whileLogic;
+        private string[] operators = new string[] {"<=","<","==",">=",">" };
+        //private int methodStart;
+        private Dictionary<string, int> methodStartPointers;
+        private bool inMethod;
+        private bool methodBool;
+        private int methodResume;
+        private bool methodCreation;
+        public Dictionary<string, int> methodNames; //name, pointer
+        private Dictionary<string, int> methodParamsReq; // name params required
+        private Dictionary<string, int> methodVars;
+        private Dictionary<string, string[]> methodVarNames;
+        private string currentMethod;
+        private string settingMethod;
 
         public CommandParser()
         {
             //Dictionary<string, int> 
             variableValues = new Dictionary<string, int>();
+            methodNames = new Dictionary<string, int>();
+            methodStartPointers = new Dictionary<string, int>();
+        //methodNames.Add("Imp0ssibleKey", 10);
+            methodVars = new Dictionary<string, int>();
+            methodParamsReq = new Dictionary<string, int>();
+            methodVarNames = new Dictionary<string, string[]>();
             insideIf = false;
             ifBool = false;
             pointer = 0;
             whileStart = -1;//this will be used to check to see if while loop exists if not -1
             whileBool = false;
             insideWhile = false;
-            whileLogic =new string[] {"","" };
+            whileLogic =new string[] {"","" , ""};
+            methodBool = false;
+            methodResume = -1;
+            //methodStart = -1;
+            inMethod = false;
+            methodCreation = false;
+            currentMethod = "";
+            settingMethod = "";
             //variableValues.Add("UnaccessablePlaceHolder1", 1000);
         }
 
@@ -103,7 +123,7 @@ namespace GraphicsProgram
         /// </summary>
         /// <param name="commandArray">Full Command Array from SplitCommand</param>
         /// <returns>String Command</returns>
-        public static string CommandExtract(String[] commandArray)
+        public string CommandExtract(String[] commandArray)  //was static
 		{
 			string[] validCommands = { "circle" ,
 										"moveto",
@@ -120,7 +140,9 @@ namespace GraphicsProgram
                                         "if",
                                         "while",
                                         "endif",
-                                        "endwhile"};
+                                        "endwhile",
+                                        "method",
+                                        "endmethod"};
 			if (commandArray.Length == 0)
 			{
 				throw new Exception("Command Array Empty");
@@ -142,6 +164,15 @@ namespace GraphicsProgram
 				string commandExtracted = commandArray[0].ToLower();
 				return commandExtracted;
 			}
+            else if (methodNames.ContainsKey(commandArray[0]))
+            {
+                //string[] returnedMethodData = new string[] {"methodex", commandArray[0] , ""};
+                //commandArray[0] = "";
+                //returnedMethodData[2] = string.Join("", commandArray);
+                //return returnedMethodData[0];
+                currentMethod = commandArray[0];
+                return "methodex";
+            }
 			else
 			{
                 
@@ -177,11 +208,12 @@ namespace GraphicsProgram
 		{
 			object[] paramArray;
 			Type[] typeArray;
-			String[] NoParams = { "clear", "reset","run", "endif", "endwhile" };
+			String[] NoParams = { "clear", "reset","run", "endif", "endwhile" ,"endmethod"};
 			String[] OneIntParams = {"circle"};
 			String[] TwoIntParams = {"moveto", "drawto", "rectangle"};
 			String[] FourIntParams = { "triangle" };
 			String[] OneStrParams = {"colour", "fill"};
+            String[] OneVariablesParam =  {"method", "methodex"}; //check if errors
 			String[] TwoStrParams = {"var"};
             String[] DoubleLogicalParams = {"if","while" };
 			if (NoParams.Contains(commandStr))
@@ -272,21 +304,43 @@ namespace GraphicsProgram
                 paramArray = ParamExtractArray(commandArray, typeArray);
                 checkParamRange(paramArray, commandStr);
             }
+            else if (OneVariablesParam.Contains(commandStr))
+            {
+                if (commandStr == "method") { settingMethod = commandArray[0]; }
+                commandArray[0] = "";
+                //string commandArrayStr = string.Join("", commandArray);
+                //paramArray = new string[] { commandArray[1] };
+                paramArray = new string[commandArray.Length - 1];
+                for (int i = 0; i < commandArray.Length - 1; i++)
+                {
+                    paramArray[i] = commandArray[i + 1];
+                }
+                checkParamRange(paramArray, commandStr);
+            }
             else if (DoubleLogicalParams.Contains(commandStr))
             {
                 commandArray[0] = "";
                 string commandArrayStr = string.Join("", commandArray);
                 //if == exists
-                if (commandArrayStr.Contains("==") && commandArrayStr.Count(c => c == '=') == 2)
+                string foundOperator = operators.FirstOrDefault(commandArrayStr.Contains, null);//operators in order of => then >
+                
+                if (foundOperator != null)
                 {
-                    //split at ==, return param array of 2 logic statements
-                    paramArray = commandArrayStr.Split("==");
-                    checkParamRange(paramArray, commandStr);
-                    //return paramArray;
+                    paramArray = commandArrayStr.Split(foundOperator);
+                    Array.Resize(ref paramArray, paramArray.Length + 1) ;
+                    paramArray[2] = foundOperator;
+                    //paramArray = whileLogic;
                 }
+                //else if (commandArrayStr.Contains("==") && commandArrayStr.Count(c => c == '=') == 2)
+                //{
+                    //split at ==, return param array of 2 logic statements
+                  //  paramArray = commandArrayStr.Split("==");
+                    //checkParamRange(paramArray, commandStr);
+                    //return paramArray;
+                //}
                 else
                 {
-                    throw new Exception("If/While needs ==, " + commandArrayStr.Count(c => c == '=').ToString() + " found");
+                    throw new Exception("If/While needs ==, <, <=, >=, >");
                 }
 
             }
@@ -331,7 +385,7 @@ namespace GraphicsProgram
         /// <param name="paramArray">Full Param Array from ParamExtract</param>
 		/// <param name="commandStr">Command String from commandExtract</param>
         /// <returns>Bool inRange</returns>
-        public static bool checkParamRange(Object[] paramArray, string commandStr) 
+        public bool checkParamRange(Object[] paramArray, string commandStr) 
 		{
 			if (paramArray.Length == 0) { return true;}
             else if (paramArray[0] is String)
@@ -401,7 +455,41 @@ namespace GraphicsProgram
                     //}
 
                 }
-				//only int params can get here and any int is in range even when large
+                if (commandStr == "methodex")
+                {
+                    //string methodString = (string)paramArray[0];
+                    //string[] methodData = methodString.Split(" ", StringSplitOptions.RemoveEmptyEntries);
+                    
+
+                    
+                    //string[] methodData = new string[paramArray.Length - 1];
+                    //for (int i = 0; i < paramArray.Length - 1; i++)
+                    //{
+                    //    methodData[i] = (string)paramArray[i + 1];
+
+                    //}
+                    if (methodParamsReq.GetValueOrDefault(currentMethod, -1) != paramArray.Length) { throw new Exception("Incorrect Number of params for method " + currentMethod + methodParamsReq.GetValueOrDefault(currentMethod, -1).ToString() + paramArray.Length.ToString()); }
+                    for (int i = 0; i < paramArray.Length; i++)
+                    {
+                        //if is number only
+                        //okay
+                        if (!int.TryParse((string)paramArray[i],out _))
+                        {
+                            if (!paramArray[i].ToString().All(char.IsLetter))
+                            {
+                                throw new Exception("Variable name " + paramArray[i] + " is invalid, must be int value or letter");
+                            }
+                        }
+                        
+                        //if is letter only
+                        //okay
+                        //else variable name issue
+                    }
+                    return true;
+
+                }
+                
+                //only int params can get here and any int is in range even when large
                 return true;
             }
 
@@ -456,7 +544,7 @@ namespace GraphicsProgram
             pointer++;
             if (strCommand == "endwhile")
             {
-                if (ExecuteLogic.Execute((string)whileLogic[0], variableValues) == ExecuteLogic.Execute((string)whileLogic[1], variableValues))
+                if (ExecuteLogic.executeInequality(ExecuteLogic.Execute((string)whileLogic[0], variableValues), ExecuteLogic.Execute((string)whileLogic[1], variableValues), (string)whileLogic[2]))
                 {
                     pointer = whileStart;
                     return;
@@ -465,6 +553,17 @@ namespace GraphicsProgram
                 insideWhile = false;
                 return;
 
+            }
+            if(methodCreation && strCommand != "endmethod"){ return; }//method doesnt execute on creation
+            if (strCommand == "endmethod") 
+            {
+                if (methodCreation && strCommand == "endmethod") { methodCreation = false; return; }
+                if (inMethod)
+                {
+                    inMethod = false;
+                    pointer = methodResume;
+                    methodVars.Clear();
+                }
             }
             if (strCommand == "endif") {insideIf = false; ifBool = false; }
             if (insideIf && !ifBool) { return; } //if inside if statement but not true
@@ -517,17 +616,20 @@ namespace GraphicsProgram
 			if (strCommand == "run")
 			{
 				if (GetSyntaxErrorArray().Length != 0) { throw new Exception("Errors in multi line program please use syntax button"); }
-				
-				RunMultiple(multilineText);
+                resetAllInternalVars();
+                RunMultiple(multilineText);
 				
 			}
             if (strCommand == "var")
             {
+                Dictionary<string, int> selectedVariableValues;
+                if (inMethod) { selectedVariableValues = methodVars; }
+                else{selectedVariableValues = variableValues; }
                 //check if var in dictionary
-                if (variableValues.ContainsKey((string)paramArray[0])) { variableValues[(string)paramArray[0]] = ExecuteLogic.Execute((string)paramArray[1],variableValues); }
+                if (selectedVariableValues.ContainsKey((string)paramArray[0])) { selectedVariableValues[(string)paramArray[0]] = ExecuteLogic.Execute((string)paramArray[1],selectedVariableValues); }
                 //update var to result of logic
                 //else
-                else { variableValues.Add((string)paramArray[0], ExecuteLogic.Execute((string)paramArray[1], variableValues)); }
+                else { selectedVariableValues.Add((string)paramArray[0], ExecuteLogic.Execute((string)paramArray[1], selectedVariableValues)); }
                 //string logicStr = (string)paramArray[1];
                 //int result = ExecuteLogic.Execute((string)paramArray[1], variableValues);
                 //variableValues[(string)paramArray[0]] = ExecuteLogic.Execute((string)paramArray[1], variableValues);
@@ -539,7 +641,10 @@ namespace GraphicsProgram
             if (strCommand == "if")
             {
                 insideIf = true;
-                if (ExecuteLogic.Execute((string)paramArray[0], variableValues) == ExecuteLogic.Execute((string)paramArray[1], variableValues))
+                Dictionary<string, int> selectedVariableValues;
+                if (inMethod) { selectedVariableValues = methodVars; }
+                else { selectedVariableValues = variableValues; }
+                if (ExecuteLogic.executeInequality(ExecuteLogic.Execute((string)paramArray[0], selectedVariableValues), ExecuteLogic.Execute((string)paramArray[1], selectedVariableValues), (string)paramArray[2]))
                 {
                     ifBool = true;
                 }
@@ -554,9 +659,68 @@ namespace GraphicsProgram
                 whileStart = pointer;//increased by one so this is pointer to first command not WHILE
                 whileLogic[0] = (string)paramArray[0];
                 whileLogic[1] = (string)paramArray[1];
-                if (ExecuteLogic.Execute((string)paramArray[0], variableValues) == ExecuteLogic.Execute((string)paramArray[1], variableValues))
+                whileLogic[2] = (string)paramArray[2];
+                Dictionary<string, int> selectedVariableValues;
+                if (inMethod) { selectedVariableValues = methodVars; }
+                else { selectedVariableValues = variableValues; }
+                if (ExecuteLogic.executeInequality(ExecuteLogic.Execute((string)whileLogic[0], selectedVariableValues), ExecuteLogic.Execute((string)whileLogic[1], selectedVariableValues), (string)whileLogic[2]))
                 {
                     whileBool = true;
+                }
+            }
+            if (strCommand == "method")
+            {
+                if (paramArray.Length > 1)//methodname vars[]
+                {
+                    string[] currentMethodVars = paramArray[1].ToString().ToLower().Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
+                    methodNames.Add((string)paramArray[0], pointer); //pointer already increased
+                    methodParamsReq.Add((string)paramArray[0], paramArray.Length - 1);
+                    methodStartPointers.Add((string)paramArray[0], pointer);//same as methodNames so dont need
+
+                    string[] methodParamNames = new string[paramArray.Length - 1];
+                    for (int i = 0; i < paramArray.Length - 1; i++)
+                    {
+                        methodParamNames[i] = (string)paramArray[i + 1];
+                        
+                    }
+                    methodVarNames.Add((string)paramArray[0], methodParamNames);
+
+                    //throw new Exception("ParamLength>1");
+                }
+                else
+                {
+                    methodNames.Add((string)paramArray[0], pointer); //pointer already increased
+                    methodParamsReq.Add((string)paramArray[0], 0);
+                    methodStartPointers.Add((string)paramArray[0], pointer);
+                    string[] methodParamNames = new string[paramArray.Length - 1];
+                    for (int i = 0; i < paramArray.Length - 1; i++)
+                    {
+                        methodParamNames[i] = (string)paramArray[i + 1];
+                        
+                    }
+                    methodVarNames.Add((string)paramArray[0], methodParamNames);
+                    //throw new Exception("ParamLength=1");
+                }
+                //methodResume = pointer;
+                methodCreation = true;
+                
+                
+            }
+            if (strCommand == "methodex")
+            {
+
+                //string[] methodAndVars = paramArray[1].ToString().ToLower().Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
+                if (paramArray.Length == methodParamsReq[currentMethod])
+                {
+                    methodResume = pointer;
+                    pointer = methodNames[currentMethod.ToString()];
+                    inMethod = true;
+                    methodVars = new Dictionary<string, int>();
+                    methodCreation = false;
+                }
+                else
+                {
+                    throw new Exception("Incorrect amount of variables in " + paramArray[0] + ", requires " + methodParamsReq[currentMethod].ToString());
                 }
             }
 
@@ -593,7 +757,7 @@ namespace GraphicsProgram
             {
                 FullParse(multiCommandArray[pointer]);
             }
-
+            resetAllInternalVars();
         }
 
         /// <summary>
@@ -630,7 +794,11 @@ namespace GraphicsProgram
                 Array.Resize(ref errorMessages, errorMessages.Length + 1);
                 errorMessages[errorMessages.Length - 1] = ("Unclosed IF Statement Please Use endif");
             }
-			return errorMessages;
+
+            //add inside while and method
+
+            resetAllInternalVars();
+            return errorMessages;
 		}
 
         /// <summary>
@@ -654,6 +822,31 @@ namespace GraphicsProgram
 			{
                 MessageBox.Show("No Errors","Syntax Checker", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
+            resetAllInternalVars();
+        }
+
+        private void resetAllInternalVars()
+        {
+            variableValues = new Dictionary<string, int>();
+            methodNames = new Dictionary<string, int>();
+            //methodNames.Add("Imp0ssibleKey", 10);
+            methodVars = new Dictionary<string, int>();
+            methodParamsReq = new Dictionary<string, int>();
+            methodVarNames = new Dictionary<string, string[]>();
+            insideIf = false;
+            ifBool = false;
+            pointer = 0;
+            whileStart = -1;//this will be used to check to see if while loop exists if not -1
+            whileBool = false;
+            insideWhile = false;
+            whileLogic = new string[] { "", "", "" };
+            methodBool = false;
+            methodResume = -1;
+            methodStartPointers = new Dictionary<string, int>();
+            inMethod = false;
+            methodCreation = false;
+            currentMethod = "";
+            settingMethod = "";
         }
 
         public static string RemoveWhitespace(string input)
@@ -673,6 +866,41 @@ namespace GraphicsProgram
                 }
             }
             return false;
+        }
+
+        public Dictionary<string, int> getMethodParamsReq()
+        {
+            return methodParamsReq;
+        }
+
+        public Dictionary<string, int> getMethodNames()
+        {
+            return methodNames;
+        }
+
+        public bool getInMethod()
+        {
+            return inMethod;
+        }
+
+        public bool getMethodBool()
+        {
+            return methodBool;
+        }
+
+        public bool getMethodCreation()
+        {
+            return methodCreation;
+        }
+
+        public Dictionary<string, string[]> getMethodVarNames()
+        {
+            return methodVarNames;
+        }
+
+        public void setCurrentMethod(string myCurrentMethod)
+        {
+            currentMethod = myCurrentMethod;
         }
 
 

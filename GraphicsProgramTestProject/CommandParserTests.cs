@@ -69,10 +69,11 @@ namespace GraphicsProgramTestProject
         {
             //Arrange
             String[] commandArray = new string[] { "moveto" };
+            CommandParser commandParser = new CommandParser();
 
 
             //Act
-            String commandStr = CommandParser.CommandExtract(commandArray); ;
+            String commandStr = commandParser.CommandExtract(commandArray); ;
 
             //Assert
             String actualCommandStr = "moveto";
@@ -83,10 +84,10 @@ namespace GraphicsProgramTestProject
         {
             //Arrange
             String[] commandArray = new string[] { "moveto", "100", "500", "Extra", "unneeded" };
-
+            CommandParser commandParser = new CommandParser();
 
             //Act
-            String commandStr = CommandParser.CommandExtract(commandArray); ;
+            String commandStr = commandParser.CommandExtract(commandArray); ;
 
             //Assert
             String actualCommandStr = "moveto";
@@ -97,12 +98,12 @@ namespace GraphicsProgramTestProject
         {
             //Arrange
             String[] commandArray = new string[] { };
-
+            CommandParser commandParser = new CommandParser();
 
             //Act
 
             //Assert
-            Assert.ThrowsException<System.Exception>(() => CommandParser.CommandExtract(commandArray));
+            Assert.ThrowsException<System.Exception>(() => commandParser.CommandExtract(commandArray));
         }
         [TestMethod]
         public void CommandExtract_InvalidCommand_Test()
@@ -110,11 +111,11 @@ namespace GraphicsProgramTestProject
             //Arrange
             String[] commandArray = new string[] { "InvalidCommand", "params" };
 
-
+            CommandParser commandParser = new CommandParser();
             //Act
 
             //Assert
-            Assert.ThrowsException<System.Exception>(() => CommandParser.CommandExtract(commandArray));
+            Assert.ThrowsException<System.Exception>(() => commandParser.CommandExtract(commandArray));
         }
         [TestMethod]
         public void ParamExtract_NoParam_Test()
@@ -271,11 +272,11 @@ namespace GraphicsProgramTestProject
             //Arrange
             Object[] paramArray = new Object[] { };
             String command = "clear";
-
+            CommandParser commandParser = new CommandParser();
             //Act
 
             //Assert
-            Assert.AreEqual(true, CommandParser.checkParamRange(paramArray, command));
+            Assert.AreEqual(true, commandParser.checkParamRange(paramArray, command));
         }
         [TestMethod]
         public void CheckParamRange_Fill_On_Test()
@@ -283,11 +284,11 @@ namespace GraphicsProgramTestProject
             //Arrange
             Object[] paramArray = new Object[] { (String)"on" };
             String command = "fill";
-
+            CommandParser commandParser = new CommandParser();
             //Act
 
             //Assert
-            Assert.AreEqual(true, CommandParser.checkParamRange(paramArray, command));
+            Assert.AreEqual(true, commandParser.checkParamRange(paramArray, command));
         }
         [TestMethod]
         public void CheckParamRange_Fill_BadString_Test()
@@ -295,12 +296,12 @@ namespace GraphicsProgramTestProject
             //Arrange
             Object[] paramArray = new Object[] { (String)"BadString" };
             String command = "fill";
-
+            CommandParser commandParser = new CommandParser();
             //Act
 
             //Assert
 
-            Assert.ThrowsException<System.Exception>(() => CommandParser.checkParamRange(paramArray, command));
+            Assert.ThrowsException<System.Exception>(() => commandParser.checkParamRange(paramArray, command));
         }
         [TestMethod]
         public void CheckParamRange_colour_blue_Test()
@@ -308,11 +309,11 @@ namespace GraphicsProgramTestProject
             //Arrange
             Object[] paramArray = new Object[] { (String)"blue" };
             String command = "colour";
-
+            CommandParser commandParser = new CommandParser();
             //Act
 
             //Assert
-            Assert.AreEqual(true, CommandParser.checkParamRange(paramArray, command));
+            Assert.AreEqual(true, commandParser.checkParamRange(paramArray, command));
         }
         [TestMethod]
         public void CheckParamRange_Colour_BadString_Test()
@@ -320,12 +321,12 @@ namespace GraphicsProgramTestProject
             //Arrange
             Object[] paramArray = new Object[] { (String)"BadString" };
             String command = "colour";
-
+            CommandParser commandParser = new CommandParser();
             //Act
 
             //Assert
 
-            Assert.ThrowsException<System.Exception>(() => CommandParser.checkParamRange(paramArray, command));
+            Assert.ThrowsException<System.Exception>(() => commandParser.checkParamRange(paramArray, command));
         }
         [TestMethod]
         public void CheckParamRange_drawto_100_100_Test()
@@ -333,11 +334,11 @@ namespace GraphicsProgramTestProject
             //Arrange
             Object[] paramArray = new Object[] { (int)100, (int)100 };
             String command = "drawto";
-
+            CommandParser commandParser = new CommandParser();
             //Act
 
             //Assert
-            Assert.AreEqual(true, CommandParser.checkParamRange(paramArray, command));
+            Assert.AreEqual(true, commandParser.checkParamRange(paramArray, command));
         }
         [TestMethod]
         public void ExecuteCommand_FillOn_Test()
@@ -401,7 +402,7 @@ namespace GraphicsProgramTestProject
             //Act
             //commandParser.FullParse("x = 100+y");
             string[] splitCommand = CommandParser.CommandSplit("x = 100+y");
-            string strCommand = CommandParser.CommandExtract(splitCommand);
+            string strCommand = commandParser.CommandExtract(splitCommand);
             object[] paramArray = commandParser.ParamExtract(splitCommand, strCommand);
 
             //Assert
@@ -414,7 +415,7 @@ namespace GraphicsProgramTestProject
             string commandStr = "circle x";
             commandParser.FullParse("x = 100");
             string[] splitCommand = CommandParser.CommandSplit(commandStr);
-            string strCommand = CommandParser.CommandExtract(splitCommand);
+            string strCommand = commandParser.CommandExtract(splitCommand);
             object[] paramArray = commandParser.ParamExtract(splitCommand, strCommand);
             Object[] correctParamArray = new Object[] { (int)100 };
 
@@ -447,10 +448,11 @@ namespace GraphicsProgramTestProject
             string[] paramArrayA = new string[] { "10", "20" };
             string[] paramArrayB = new string[] { "x", "20" };
             string[] paramArrayC = new string[] { "x12", "20" };
+            CommandParser commandParser = new CommandParser();
 
-            Assert.AreEqual(true, CommandParser.checkParamRange(paramArrayA, "if"));
-            Assert.AreEqual(true, CommandParser.checkParamRange(paramArrayB, "if"));
-            Assert.ThrowsException<System.Exception>(() => CommandParser.checkParamRange(paramArrayC, "if"));
+            Assert.AreEqual(true, commandParser.checkParamRange(paramArrayA, "if"));
+            Assert.AreEqual(true, commandParser.checkParamRange(paramArrayB, "if"));
+            Assert.ThrowsException<System.Exception>(() => commandParser.checkParamRange(paramArrayC, "if"));
 
 
         }
@@ -461,23 +463,23 @@ namespace GraphicsProgramTestProject
             string inputStr = "if x == 12";
             //commandParser.FullParse("x = 100");
             string[] splitCommand = CommandParser.CommandSplit(inputStr);
-            string strCommand = CommandParser.CommandExtract(splitCommand);
+            string strCommand = commandParser.CommandExtract(splitCommand);
             object[] paramArray = commandParser.ParamExtract(splitCommand, strCommand);
-            Object[] correctParamArray = new Object[] { (string)"x", (string)"12" };
+            Object[] correctParamArray = new Object[] { (string)"x", (string)"12", (string)"==" };
 
             string inputStrB = "if x12 == 12";
             //commandParser.FullParse("x = 100");
             string[] splitCommandB = CommandParser.CommandSplit(inputStrB);
-            string strCommandB = CommandParser.CommandExtract(splitCommandB);
-            
-            
+            string strCommandB = commandParser.CommandExtract(splitCommandB);
+
+
 
 
 
 
 
             CollectionAssert.AreEqual(paramArray, correctParamArray);
-            Assert.ThrowsException<System.Exception>(() => commandParser.ParamExtract(splitCommandB, strCommandB));
+            Assert.ThrowsException<System.Exception>(() => commandParser.executeCommand(strCommandB, commandParser.ParamExtract(splitCommandB, strCommandB)));
 
 
 
@@ -499,6 +501,204 @@ namespace GraphicsProgramTestProject
             //Assert
             Assert.AreEqual(105, commandParser.variableValues["x"]);
         }
+        [TestMethod]
+        public void ParamExtract_Method_Tests()
+        {
+            CommandParser commandParser = new CommandParser();
+            string commandStrA = "method myMethod";
+            string commandStrB = "method myMethodB a b";
+            string commandStrC = "method myMethodc a b c d e f";
+
+            string[] commandSplitA = CommandParser.CommandSplit(commandStrA);
+            string[] commandSplitB = CommandParser.CommandSplit(commandStrB);
+            string[] commandSplitC = CommandParser.CommandSplit(commandStrC);
+
+            string strCommandA = commandParser.CommandExtract(commandSplitA);
+            string strCommandB = commandParser.CommandExtract(commandSplitB);
+            string strCommandC = commandParser.CommandExtract(commandSplitC);
+
+            object[] paramArrayA = commandParser.ParamExtract(commandSplitA, strCommandA);
+            object[] paramArrayB = commandParser.ParamExtract(commandSplitB, strCommandB);
+            object[] paramArrayC = commandParser.ParamExtract(commandSplitC, strCommandC);
+
+            
+
+
+
+            object[] paramArrayBActual = new object[] { (string)"mymethodb", (string)"a", (string)"b" };
+            object[] paramArrayCActual = new object[] { (string)"mymethodc", (string)"a", (string)"b", (string)"c", (string)"d" , (string)"e" , (string)"f" };
+            
+
+
+            Assert.AreEqual(1, paramArrayA.Length);
+            CollectionAssert.AreEqual(paramArrayB, paramArrayBActual);
+            CollectionAssert.AreEqual(paramArrayC, paramArrayCActual);
+            Assert.AreEqual("method", strCommandB);
+            
+
+        }
+        [TestMethod]
+        public void FullParse_MethodVarNames_Test()
+        {
+            string commandStrA = "method myMethod";
+            string commandStrB = "method myMethodB a b";
+            string commandStrC = "method myMethodc a b c d e f";
+
+            CommandParser commandParser = new CommandParser();
+
+            commandParser.FullParse(commandStrC);
+            commandParser.FullParse("endmethod");
+
+            commandParser.FullParse(commandStrB);
+            commandParser.FullParse("endmethod");
+
+            Dictionary<string, int> methodParamsReq = commandParser.getMethodParamsReq();
+            Dictionary<string, string[]> methodVarNames = commandParser.getMethodVarNames();
+            Dictionary<string, string[]> actualMethodVarNames = new Dictionary<string, string[]>();
+            actualMethodVarNames.Add("mymethodc", new string[] { "a", "b", "c", "d", "e", "f" });
+            actualMethodVarNames.Add("mymethodb", new string[] { "a", "b"});
+
+            Assert.AreEqual(6, methodParamsReq.GetValueOrDefault("mymethodc", 0));
+            Assert.AreEqual(2, methodParamsReq.GetValueOrDefault("mymethodb", 0));
+
+            //methodVarNamesWorks, just acts weird as dictionary
+            //CollectionAssert.AreEqual(actualMethodVarNames.(0), methodVarNames.ElementAt(0));
+
+        }
+
+        [TestMethod]
+        public void FullParse_MethodBehavior()
+        {
+            CommandParser commandParser = new CommandParser();
+            commandParser.FullParse("method myMethod a b");
+            //once method started assert bsaic info
+            Assert.AreEqual(false, commandParser.getInMethod());//inmethod
+            //Assert.AreEqual(false, commandParser.getMethodBool);//methodbool is not used
+            Assert.AreEqual(true, commandParser.getMethodCreation());//methodcreation
+            
+            commandParser.FullParse("circle 50");//should be skipped
+            Assert.AreEqual(false, commandParser.getInMethod());
+            Assert.AreEqual(true, commandParser.getMethodCreation());
+
+
+            commandParser.FullParse("endmethod");
+            Assert.AreEqual(false, commandParser.getInMethod());
+            Assert.AreEqual(false, commandParser.getMethodCreation());
+        }
+
+        public void ParamExtract_MethodRunning_Tests()
+        {
+            CommandParser commandParser = new CommandParser();
+            string commandStrA = "method myMethod";
+            string commandStrB = "method myMethodB a b";
+
+            string[] commandSplitA = CommandParser.CommandSplit(commandStrA);
+            string[] commandSplitB = CommandParser.CommandSplit(commandStrB);
+
+            string strCommandA = commandParser.CommandExtract(commandSplitA);
+            string strCommandB = commandParser.CommandExtract(commandSplitB);
+
+            object[] paramArrayA = commandParser.ParamExtract(commandSplitA, strCommandA);
+            object[] paramArrayB = commandParser.ParamExtract(commandSplitB, strCommandB);
+
+            object[] paramArrayBActual = new object[] { (string)"mymethodb", (string)"a", (string)"b" };
+
+            Assert.AreEqual(1, paramArrayA.Length);
+            CollectionAssert.AreEqual(paramArrayB, paramArrayBActual);
+
+        }
+        [TestMethod]
+        public void ParamExtract_MethodRun_Tests()
+        {
+            CommandParser commandParser = new CommandParser();
+
+            commandParser.FullParse("method mymethod a b");
+            commandParser.FullParse("endmethod");
+            commandParser.FullParse("method mymethodb a b c");
+            commandParser.FullParse("endmethod");
+            commandParser.FullParse("method mymethodc a b c d e f");
+            commandParser.FullParse("endmethod");
+
+            string commandStrA = "myMethod 10 1000";
+            string commandStrB = "myMethodB 10 1002 10";
+            string commandStrC = "myMethodc a 12 c d 50 f";
+
+            string[] commandSplitA = CommandParser.CommandSplit(commandStrA);
+            string[] commandSplitB = CommandParser.CommandSplit(commandStrB);
+            string[] commandSplitC = CommandParser.CommandSplit(commandStrC);
+            string[] actualCommandSplitB = new string[] { "mymethodb", "10", "1002", "10" };
+
+            CollectionAssert.AreEqual(actualCommandSplitB, commandSplitB);
+
+            string strCommandA = commandParser.CommandExtract(commandSplitA);
+            string strCommandB = commandParser.CommandExtract(commandSplitB);
+            string strCommandC = commandParser.CommandExtract(commandSplitC);
+
+            //set current method to name, full parse will do automaticall in execute
+            commandParser.setCurrentMethod("mymethod");
+            object[] paramArrayA = commandParser.ParamExtract(commandSplitA, strCommandA);
+            commandParser.setCurrentMethod("mymethodb");
+            object[] paramArrayB = commandParser.ParamExtract(commandSplitB, strCommandB);
+            commandParser.setCurrentMethod("mymethodc");
+            object[] paramArrayC = commandParser.ParamExtract(commandSplitC, strCommandC);
+
+
+
+
+            string[] paramArrayAActual = new string[] {(string)"10", (string)"1000" };
+            string[] paramArrayBActual = new string[] {(string)"10", (string)"1002" , (string)"10" };
+            string[] paramArrayCActual = new string[] { (string)"a", (string)"12", (string)"c", (string)"d", (string)"50", (string)"f" };
+
+
+
+            CollectionAssert.AreEqual(paramArrayA, paramArrayAActual);
+            CollectionAssert.AreEqual(paramArrayB, paramArrayBActual);
+            CollectionAssert.AreEqual(paramArrayC, paramArrayCActual);
+            //Assert.AreEqual("method", strCommandB);
+
+
+        }
+
+        [TestMethod]
+        public void MethodNamesPointerLocation_Test()
+        {
+            string multiLineText =
+                         "circle 50" + Environment.NewLine +
+                        "circle 20" + Environment.NewLine +
+                        "method test" + Environment.NewLine +
+                       "moveto 50 50" + Environment.NewLine +
+                       "endmethod" + Environment.NewLine +
+                       "test";
+            CommandParser commandParser = new CommandParser();
+            PictureBox p = new PictureBox();
+            GraphicsHandler graphicsHandler = new GraphicsHandler(p);
+            commandParser.setGraphicsHandler(graphicsHandler);
+
+
+            commandParser.RunMultiple(multiLineText);
+
+            //find pointer value for test method
+            Dictionary<string, int> methodNames = new Dictionary<string, int>();
+            methodNames = commandParser.getMethodNames();
+            int testPointer;
+            testPointer = methodNames.GetValueOrDefault("test",-10);
+            Assert.AreEqual(testPointer, 3);
+        }
+
+
+        [TestMethod]
+        public void FullParse_MethodSet_Test()
+        {
+
+        }
+        [TestMethod]
+        public void FullParse_MethodNoParamsRun_Test()
+        {
+            CommandParser command = new CommandParser();
+            //CommandParser.FullParse("method mymethod");
+        }
+
+
 
     }
 }

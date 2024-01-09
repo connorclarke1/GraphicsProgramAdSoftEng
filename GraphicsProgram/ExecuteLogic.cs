@@ -38,5 +38,16 @@ namespace GraphicsProgram
             }
             return currentValue;
         }
+
+        public static bool executeInequality(int a, int b, string operatorStr)
+        {
+            //if (operatorStr == '') { } ;
+            if (operatorStr == ">") { return (a > b); }
+            if (operatorStr == ">=") { return (a >= b); }
+            if (operatorStr == "==") { return (a == b); }
+            if (operatorStr == "<=") { return (a <= b); }
+            if (operatorStr == "<") { return (a < b); }
+            else { return false; }
+        }
     }
 }
