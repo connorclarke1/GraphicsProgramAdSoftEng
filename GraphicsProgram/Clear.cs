@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace GraphicsProgram
 {
@@ -24,6 +25,7 @@ namespace GraphicsProgram
             PictureBox p = graphicsHandler.pictureBox; 
             g.Clear(Color.White);
             p.Invalidate();
+            p.Refresh();
         }
     }
 }

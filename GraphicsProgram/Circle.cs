@@ -32,6 +32,7 @@ namespace GraphicsProgram
             if (fill) { g.FillEllipse(graphicsHandler.brush, pointerX - (radius), pointerY - (radius), (2 * radius), (2 * radius)); }
             if (!fill) { g.DrawEllipse(graphicsHandler.pen , pointerX - (radius), pointerY - (radius), (2 * radius), (2 * radius)); }
             pictureBox.Invalidate();
+            pictureBox.Refresh();
         }
     }
 }

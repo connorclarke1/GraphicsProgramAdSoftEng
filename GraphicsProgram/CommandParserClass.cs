@@ -1,6 +1,6 @@
 ﻿namespace GraphicsProgram
 {
-
+    using System.Threading;
     public class CommandParser
 	{
 		GraphicsHandler? graphicsHandler;
@@ -143,7 +143,8 @@
                                         "endif",
                                         "endwhile",
                                         "method",
-                                        "endmethod"};
+                                        "endmethod",
+                                        "wait"};
 			if (commandArray.Length == 0)
 			{
 				throw new Exception("Command Array Empty");
@@ -210,7 +211,7 @@
 			object[] paramArray;
 			Type[] typeArray;
 			String[] NoParams = { "clear", "reset","run", "endif", "endwhile" ,"endmethod"};
-			String[] OneIntParams = {"circle"};
+			String[] OneIntParams = {"circle", "wait"};
 			String[] TwoIntParams = {"moveto", "drawto", "rectangle"};
 			String[] FourIntParams = { "triangle" };
 			String[] OneStrParams = {"colour", "fill"};
@@ -599,6 +600,7 @@
                 intArray[1] = (int)paramArray[1];
                 graphicsHandler.pointer.SetPointerPos(intArray);
 			}
+            
             if (strCommand == "drawto")
             {
                 int[] intArray = new int[2];
@@ -624,7 +626,8 @@
 			{
 				Circle.Draw(graphicsHandler, (int)paramArray[0]);
 			}
-			if (strCommand == "rectangle")
+            if (strCommand == "wait") { Thread.Sleep((int)paramArray[0] * 1000); }
+            if (strCommand == "rectangle")
 			{
 				Rectangle.Draw(graphicsHandler, (int)paramArray[0], (int)paramArray[1]);
 			}

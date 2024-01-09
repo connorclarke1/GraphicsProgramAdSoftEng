@@ -43,6 +43,7 @@ namespace GraphicsProgram
             if (fill) { g.FillPolygon(graphicsHandler.brush, pointArray); }
             if (!fill) { g.DrawPolygon(graphicsHandler.pen, pointArray); }
             pictureBox.Invalidate();
+            pictureBox.Refresh();
         }
     }
 }

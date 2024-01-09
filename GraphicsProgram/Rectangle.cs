@@ -32,6 +32,7 @@ namespace GraphicsProgram
             if (fill) { g.FillRectangle(graphicsHandler.brush, pointerX, pointerY, xLen, yLen); }
             if (!fill) { g.DrawRectangle(graphicsHandler.pen, pointerX, pointerY, xLen, yLen); }
             pictureBox.Invalidate();
+            pictureBox.Refresh();
         }
     }
 }

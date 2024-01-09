@@ -34,6 +34,7 @@ namespace GraphicsProgram
 
             g.DrawLine(p, startX, startY, endX, endY);
             pictureBox.Invalidate();
+            pictureBox.Refresh();
 
             pointer.SetPointerXPos(endX);
             pointer.SetPointerYPos(endY);
