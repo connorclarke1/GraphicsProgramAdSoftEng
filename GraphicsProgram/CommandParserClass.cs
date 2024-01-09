@@ -26,6 +26,7 @@
         private Dictionary<string, string[]> methodVarNames;
         private string currentMethod;
         private string settingMethod;
+        private bool checkingSyntax;
 
         public CommandParser()
         {
@@ -51,6 +52,7 @@
             methodCreation = false;
             currentMethod = "";
             settingMethod = "";
+            checkingSyntax = false;
             
             //variableValues.Add("UnaccessablePlaceHolder1", 1000);
         }
@@ -626,7 +628,10 @@
 			{
 				Circle.Draw(graphicsHandler, (int)paramArray[0]);
 			}
-            if (strCommand == "wait") { Thread.Sleep((int)paramArray[0] * 1000); }
+            if (strCommand == "wait") { 
+                if (!checkingSyntax) { Thread.Sleep((int)paramArray[0] * 1000); }
+                
+            }
             if (strCommand == "rectangle")
 			{
 				Rectangle.Draw(graphicsHandler, (int)paramArray[0], (int)paramArray[1]);
@@ -805,7 +810,7 @@
 			String[] multiCommandArray = multilineText.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
 
 			String[] errorMessages = new string[0];
-
+            checkingSyntax = true;
 			for (int i = 0; i < multiCommandArray.Length; i++)
 			{
 				string[] splitCommand = CommandSplit(multiCommandArray[i]);
@@ -892,6 +897,7 @@
             graphicsHandler.SetFill(false);
             graphicsHandler.pointer.SetPointerXPos(0);
             graphicsHandler.pointer.SetPointerYPos(0);
+            checkingSyntax = false;
 
         }
 
