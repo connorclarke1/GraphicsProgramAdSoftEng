@@ -148,7 +148,8 @@
                                         "endmethod",
                                         "wait",
                                         "save",
-                                        "load"};
+                                        "load",
+                                        "thread"};
 			if (commandArray.Length == 0)
 			{
 				throw new Exception("Command Array Empty");
@@ -359,6 +360,16 @@
                 else
                 {
                     throw new Exception("If/While needs ==, <, <=, >=, >");
+                }
+
+            }
+            else if (commandStr == "thread") 
+            {
+                paramArray = new string[commandArray.Length - 1];
+                for (int i = 0; i < paramArray.Length; i++)
+                {
+                    paramArray[i] = (string)commandArray[i + 1];
+
                 }
 
             }
@@ -617,6 +628,24 @@
                 string fileText = File.ReadAllText(Path.Combine(Environment.CurrentDirectory, (string)paramArray[0]));
                 RunMultiple(fileText);
             }
+
+            if (strCommand == "thread")
+            {
+                
+                Thread[] threadArray;
+                
+                string[] textArray = new string[paramArray.Length];
+                threadArray = new Thread[paramArray.Length];
+                
+
+                for (int i = 0; i < paramArray.Length; i++)
+                {
+                    
+                    string myText = File.ReadAllText(Path.Combine(Environment.CurrentDirectory, (string)paramArray[i]));
+                    threadArray[i] = new Thread(() => RunMultiple(myText));
+                    threadArray[i].Start();
+                }
+            }
             
             if (strCommand == "drawto")
             {
@@ -855,6 +884,8 @@
                 Array.Resize(ref errorMessages, errorMessages.Length + 1);
                 errorMessages[errorMessages.Length - 1] = ("Unclosed IF Statement Please Use endif");
             }
+            
+            
 
             //add inside while and method
 
