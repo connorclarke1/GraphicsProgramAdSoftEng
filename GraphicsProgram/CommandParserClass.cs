@@ -217,21 +217,25 @@
             String[] OneVariablesParam =  {"method", "methodex"}; //check if errors
 			String[] TwoStrParams = {"var"};
             String[] DoubleLogicalParams = {"if","while" };
-			if (NoParams.Contains(commandStr))
+            if (methodCreation) { return new string[0]; }
+			else if (NoParams.Contains(commandStr))
 			{
 				if (commandArray.Length != 1) { throw new Exception("Command: " + commandStr + " should have no parameters, " + (commandArray.Length - 1).ToString() + " given."); }
 				paramArray = ParamExtractArray(commandArray, new Type[0]);
 			}
 			else if (OneIntParams.Contains(commandStr))
 			{
+                Dictionary<string, int> selectedVariableValues;
+                if (inMethod) { selectedVariableValues = methodVars; }
+                else { selectedVariableValues = variableValues; }
 
-				if (commandArray.Length != 2) { throw new Exception("Command: " + commandStr + " should have one integer parameter, " + (commandArray.Length - 1).ToString() + " given."); }
+                if (commandArray.Length != 2) { throw new Exception("Command: " + commandStr + " should have one integer parameter, " + (commandArray.Length - 1).ToString() + " given."); }
                 if (!(int.TryParse(commandArray[1], out _)))
                 {
                     //if variable exists then fine
-                    if (variableValues.ContainsKey(commandArray[1]))
+                    if (selectedVariableValues.ContainsKey(commandArray[1]))
                     {
-                        commandArray[1] = variableValues.GetValueOrDefault(commandArray[1], 0).ToString();
+                        commandArray[1] = selectedVariableValues.GetValueOrDefault(commandArray[1], 0).ToString();
                     }
                     else
                     {
@@ -244,14 +248,18 @@
 			}
 			else if (TwoIntParams.Contains(commandStr))
 			{
-				if (commandArray.Length != 3) { throw new Exception("Command: " + commandStr + " should have two integer parameters, " + (commandArray.Length - 1).ToString() + " given."); }
+                Dictionary<string, int> selectedVariableValues;
+                if (inMethod) { selectedVariableValues = methodVars; }
+                else { selectedVariableValues = variableValues; }
+
+                if (commandArray.Length != 3) { throw new Exception("Command: " + commandStr + " should have two integer parameters, " + (commandArray.Length - 1).ToString() + " given."); }
 				for (int i =1; i < commandArray.Length; i++) 
 				{ 
 					if (!(int.TryParse(commandArray[i], out _))) 
                     {
-                        if (variableValues.ContainsKey(commandArray[i]))
+                        if (selectedVariableValues.ContainsKey(commandArray[i]))
                         {
-                            commandArray[i] = variableValues.GetValueOrDefault(commandArray[i], 0).ToString();
+                            commandArray[i] = selectedVariableValues.GetValueOrDefault(commandArray[i], 0).ToString();
                         }
                         else
                         {
@@ -266,14 +274,18 @@
             }
             else if (FourIntParams.Contains(commandStr))
             {
+                Dictionary<string, int> selectedVariableValues;
+                if (inMethod) { selectedVariableValues = methodVars; }
+                else { selectedVariableValues = variableValues; }
+
                 if (commandArray.Length != 5) { throw new Exception("Command: " + commandStr + " should have four integer parameters, " + (commandArray.Length - 1).ToString() + " given."); }
                 for (int i = 1; i < commandArray.Length; i++)
                 {
                     if (!(int.TryParse(commandArray[i], out _)))
                     {
-                        if (variableValues.ContainsKey(commandArray[i]))
+                        if (selectedVariableValues.ContainsKey(commandArray[i]))
                         {
-                            commandArray[i] = variableValues.GetValueOrDefault(commandArray[i], 0).ToString();
+                            commandArray[i] = selectedVariableValues.GetValueOrDefault(commandArray[i], 0).ToString();
                         }
                         else 
                         { 
@@ -474,18 +486,21 @@
                     {
                         //if is number only
                         //okay
-                        if (!int.TryParse((string)paramArray[i],out _))
+                        if (!int.TryParse((string)paramArray[i], out _))
                         {
                             if (!paramArray[i].ToString().All(char.IsLetter))
                             {
                                 throw new Exception("Variable name " + paramArray[i] + " is invalid, must be int value or letter");
                             }
                         }
-                        
+                    }
                         //if is letter only
                         //okay
                         //else variable name issue
-                    }
+                        //set variables to vars given
+                    
+
+                    
                     return true;
 
                 }
@@ -716,7 +731,17 @@
                     methodResume = pointer;
                     pointer = methodNames[currentMethod.ToString()];
                     inMethod = true;
+                    //methodVars = new Dictionary<string, int>();
                     methodVars = new Dictionary<string, int>();
+                    string[] varNames = methodVarNames.GetValueOrDefault(currentMethod, new string[0]);
+                    for (int j = 0; j < methodParamsReq.GetValueOrDefault(currentMethod, 0); j++)
+                    {
+                        if (int.TryParse((string)paramArray[j], out _)) { methodVars.Add(varNames[j], int.Parse((string)paramArray[j])); }
+                        else { methodVars.Add(varNames[j], variableValues[(string)paramArray[j]]); }
+                        //throw new Exception("We got here");
+
+                    }
+
                     methodCreation = false;
                 }
                 else
@@ -774,15 +799,24 @@
 			String[] multiCommandArray = multilineText.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
 
 			String[] errorMessages = new string[0];
+
 			for (int i = 0; i < multiCommandArray.Length; i++)
 			{
 				string[] splitCommand = CommandSplit(multiCommandArray[i]);
 				try
-				{
+				{   
+
 					string strCommand = CommandExtract(splitCommand);
-					object[] paramArray = ParamExtract(splitCommand, strCommand);
-					executeCommand(strCommand, paramArray);
-					Clear.ClearMethod(graphicsHandler);
+                    if (!methodCreation)
+                    {
+                        object[] paramArray = ParamExtract(splitCommand, strCommand);
+                        executeCommand(strCommand, paramArray);
+                        //if (strCommand == "method") { inMethod = true; }//change variables looked at
+                        //if (strCommand == "endmethod") { inMethod = false; }
+                    }
+                    else if (strCommand == "endmethod"){ methodCreation = false; }//ignores within method creation
+                    Clear.ClearMethod(graphicsHandler);
+                    
 				}
 				catch (Exception e)
 				{
@@ -907,6 +941,11 @@
         public void setCurrentMethod(string myCurrentMethod)
         {
             currentMethod = myCurrentMethod;
+        }
+
+        public Dictionary<string, int> getMethodVars() 
+        {
+            return methodVars;
         }
 
 
