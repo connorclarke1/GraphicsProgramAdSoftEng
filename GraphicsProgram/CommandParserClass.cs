@@ -14,15 +14,14 @@
         private bool whileBool;
         private string[] whileLogic;
         private string[] operators = new string[] {"<=","<","==",">=",">" };
-        //private int methodStart;
         private Dictionary<string, int> methodStartPointers;
         private bool inMethod;
         private bool methodBool;
         private int methodResume;
         private bool methodCreation;
         public Dictionary<string, int> methodNames; //name, pointer
-        private Dictionary<string, int> methodParamsReq; // name params required
-        private Dictionary<string, int> methodVars;
+        private Dictionary<string, int> methodParamsReq; // name, params required
+        private Dictionary<string, int> methodVars; //same as variableValues but to be used in methods
         private Dictionary<string, string[]> methodVarNames;
         private string currentMethod;
         private string settingMethod;
@@ -30,31 +29,26 @@
 
         public CommandParser()
         {
-            //Dictionary<string, int> 
             variableValues = new Dictionary<string, int>();
             methodNames = new Dictionary<string, int>();
             methodStartPointers = new Dictionary<string, int>();
-        //methodNames.Add("Imp0ssibleKey", 10);
             methodVars = new Dictionary<string, int>();
             methodParamsReq = new Dictionary<string, int>();
             methodVarNames = new Dictionary<string, string[]>();
             insideIf = false;
             ifBool = false;
             pointer = 0;
-            whileStart = -1;//this will be used to check to see if while loop exists if not -1
+            whileStart = -1;
             whileBool = false;
             insideWhile = false;
             whileLogic =new string[] {"","" , ""};
             methodBool = false;
             methodResume = -1;
-            //methodStart = -1;
             inMethod = false;
             methodCreation = false;
             currentMethod = "";
             settingMethod = "";
-            checkingSyntax = false;
-            
-            //variableValues.Add("UnaccessablePlaceHolder1", 1000);
+            checkingSyntax = false;           
         }
 
         public void setGraphicsHandler(GraphicsHandler g) { graphicsHandler = g; }
@@ -99,16 +93,17 @@
         public static string[] CommandSplit(String commandStr)
 		{
 			string[] parsedStr = new string[] { };
+            //have to check of there is single = as there is no prefix when setting variables with x = 10 etc
+            //only if single equals and no < or > since while x <= 5 is valid
 			if (commandStr.Count(c => c == '=') == 1 && commandStr.Count(c => c == '<') == 0 && commandStr.Count(c => c == '>') == 0) 
 			{
 				parsedStr = commandStr.Split("="); 
-				//should only have 2 items in array
-				Array.Resize(ref parsedStr, parsedStr.Length + 1);//should be 2 -> 3
+				Array.Resize(ref parsedStr, parsedStr.Length + 1);
 				parsedStr[2] = RemoveWhitespace(parsedStr[1]);
 				parsedStr[1] = RemoveWhitespace(parsedStr[0]);
 				parsedStr[0] = "var";
-				//increase size by one, make [0] "var" for use in rest of parser
-			}//while loops etc have double equals
+				
+			}
 			else {parsedStr = commandStr.ToLower().Split(new char[0], StringSplitOptions.RemoveEmptyEntries); }
 			return parsedStr;
 		}
@@ -148,8 +143,7 @@
                                         "endmethod",
                                         "wait",
                                         "save",
-                                        "load",
-                                        "thread"};
+                                        "load"};
 			if (commandArray.Length == 0)
 			{
 				throw new Exception("Command Array Empty");
@@ -162,7 +156,7 @@
                     {
                         throw new Exception("Logic Statement(IF/WHILE) Statement must use ==");
                     }
-                    //delete else below as never ran since if more than 1 = then not var
+                    
                     else if (string.Join("",commandArray).Count(c => c == '=') > 2)
                     {
                         throw new Exception("Logic Statement IF/While has too many = please use ==");
@@ -173,10 +167,6 @@
 			}
             else if (methodNames.ContainsKey(commandArray[0]))
             {
-                //string[] returnedMethodData = new string[] {"methodex", commandArray[0] , ""};
-                //commandArray[0] = "";
-                //returnedMethodData[2] = string.Join("", commandArray);
-                //return returnedMethodData[0];
                 currentMethod = commandArray[0];
                 return "methodex";
             }
@@ -220,7 +210,7 @@
 			String[] TwoIntParams = {"moveto", "drawto", "rectangle"};
 			String[] FourIntParams = { "triangle" };
 			String[] OneStrParams = {"colour", "fill", "save", "load"};
-            String[] OneVariablesParam =  {"method", "methodex"}; //check if errors
+            String[] OneVariablesParam =  {"method", "methodex"};
 			String[] TwoStrParams = {"var"};
             String[] DoubleLogicalParams = {"if","while" };
             if (methodCreation) { return new string[0]; }
@@ -327,8 +317,6 @@
             {
                 if (commandStr == "method") { settingMethod = commandArray[0]; }
                 commandArray[0] = "";
-                //string commandArrayStr = string.Join("", commandArray);
-                //paramArray = new string[] { commandArray[1] };
                 paramArray = new string[commandArray.Length - 1];
                 for (int i = 0; i < commandArray.Length - 1; i++)
                 {
@@ -340,23 +328,15 @@
             {
                 commandArray[0] = "";
                 string commandArrayStr = string.Join("", commandArray);
-                //if == exists
-                string foundOperator = operators.FirstOrDefault(commandArrayStr.Contains, null);//operators in order of => then >
+                string foundOperator = operators.FirstOrDefault(commandArrayStr.Contains, null);//operators in order of => then > so that => found first
                 
                 if (foundOperator != null)
                 {
                     paramArray = commandArrayStr.Split(foundOperator);
                     Array.Resize(ref paramArray, paramArray.Length + 1) ;
                     paramArray[2] = foundOperator;
-                    //paramArray = whileLogic;
                 }
-                //else if (commandArrayStr.Contains("==") && commandArrayStr.Count(c => c == '=') == 2)
-                //{
-                    //split at ==, return param array of 2 logic statements
-                  //  paramArray = commandArrayStr.Split("==");
-                    //checkParamRange(paramArray, commandStr);
-                    //return paramArray;
-                //}
+                
                 else
                 {
                     throw new Exception("If/While needs ==, <, <=, >=, >");
@@ -392,7 +372,7 @@
 
             for (int i = 0; i < commandArray.Length - 1; i++)
             {	
-				//only need to check int 
+				//only check ints 
                 if (!TryConvert(commandArray[i+1], typeArray[i]))
                 {
 					throw new Exception("Parameter Conversion to Int Failed");
@@ -446,30 +426,24 @@
                 }
 				if (commandStr == "var")
 				{
-					//if paramArray[0] has no integers
 					if (!ContainsInteger(paramArray[0].ToString()))
                     {
-                        //if paramArray[1] checkLogic
                         if (CheckLogic.Check(paramArray[1].ToString(), null)) 
                         {
                             return true;
                         }
-                        //else exception
                         else
                         {
                             throw new Exception("Invalid Logic when setting variable");
                         }
                     }
-                    //else exception
                     else
                     {
                         throw new Exception("Variable name must not contain integer");
                     }
-					
 				}
                 if (commandStr == "if" || commandStr == "while")
                 {
-                    //if (!ContainsInteger(paramArray[0].ToString()) || !ContainsInteger(paramArray[1].ToString())) {
                         if (CheckLogic.Check((string)paramArray[0], null))
                         {
                             if (CheckLogic.Check((string)paramArray[1], null))
@@ -481,42 +455,21 @@
                         {
                             throw new Exception("Logic error within statement");
                         }
-                    //}
-
                 }
                 if (commandStr == "methodex")
                 {
-                    //string methodString = (string)paramArray[0];
-                    //string[] methodData = methodString.Split(" ", StringSplitOptions.RemoveEmptyEntries);
-                    
-
-                    
-                    //string[] methodData = new string[paramArray.Length - 1];
-                    //for (int i = 0; i < paramArray.Length - 1; i++)
-                    //{
-                    //    methodData[i] = (string)paramArray[i + 1];
-
-                    //}
                     if (methodParamsReq.GetValueOrDefault(currentMethod, -1) != paramArray.Length) { throw new Exception("Incorrect Number of params for method " + currentMethod + methodParamsReq.GetValueOrDefault(currentMethod, -1).ToString() + paramArray.Length.ToString()); }
                     for (int i = 0; i < paramArray.Length; i++)
                     {
-                        //if is number only
-                        //okay
                         if (!int.TryParse((string)paramArray[i], out _))
                         {
                             if (!paramArray[i].ToString().All(char.IsLetter))
                             {
+                                //if not an int then var name, var name must be letters only
                                 throw new Exception("Variable name " + paramArray[i] + " is invalid, must be int value or letter");
                             }
                         }
                     }
-                        //if is letter only
-                        //okay
-                        //else variable name issue
-                        //set variables to vars given
-                    
-                    
-                    
                     return true;
 
                 }
@@ -531,7 +484,6 @@
             //all commands only have one type of param, eg all ints or strings
             {
 				return true; //All int params should be okay since the graphics can cut off parts out of range
-				//potentially add out of range for extremely large numbers
 			}
 			else { return false; }
         }
@@ -552,7 +504,7 @@
             }
             catch (Exception)
             {
-                return false; // Conversion failed
+                return false;
             }
         }
 
@@ -574,7 +526,7 @@
         /// <returns>void</returns>
         public void executeCommand(String strCommand, object[] paramArray)
 		{
-            //add endif before, if if false then end and reset
+            
             pointer++;
             if (strCommand == "endwhile")
             {
@@ -699,15 +651,9 @@
                 //check if var in dictionary
                 if (selectedVariableValues.ContainsKey((string)paramArray[0])) { selectedVariableValues[(string)paramArray[0]] = ExecuteLogic.Execute((string)paramArray[1],selectedVariableValues); }
                 //update var to result of logic
-                //else
+                //else create key
                 else { selectedVariableValues.Add((string)paramArray[0], ExecuteLogic.Execute((string)paramArray[1], selectedVariableValues)); }
-                //string logicStr = (string)paramArray[1];
-                //int result = ExecuteLogic.Execute((string)paramArray[1], variableValues);
-                //variableValues[(string)paramArray[0]] = ExecuteLogic.Execute((string)paramArray[1], variableValues);
-                ///create var in dict
-                ///update var to result of logic
-                ///
-                //this should create the key in the dictionary if not already there
+                
             }
             if (strCommand == "if")
             {
@@ -719,15 +665,12 @@
                 {
                     ifBool = true;
                 }
-                //check if statement
-                    //ifbool true
-
             }
             if (strCommand == "while")
             {
                 insideWhile = true;
                 whileBool = false;
-                whileStart = pointer - 1;//increased by one so this is pointer to first command not WHILE CHANGED to -1 so while is executed again
+                whileStart = pointer - 1;
                 whileLogic[0] = (string)paramArray[0];
                 whileLogic[1] = (string)paramArray[1];
                 whileLogic[2] = (string)paramArray[2];
@@ -741,12 +684,12 @@
             }
             if (strCommand == "method")
             {
-                if (paramArray.Length > 1)//methodname vars[]
+                if (paramArray.Length > 1)
                 {
                     string[] currentMethodVars = paramArray[1].ToString().ToLower().Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
                     methodNames.Add((string)paramArray[0], pointer); //pointer already increased
                     methodParamsReq.Add((string)paramArray[0], paramArray.Length - 1);
-                    methodStartPointers.Add((string)paramArray[0], pointer);//same as methodNames so dont need
+                    methodStartPointers.Add((string)paramArray[0], pointer);
 
                     string[] methodParamNames = new string[paramArray.Length - 1];
                     for (int i = 0; i < paramArray.Length - 1; i++)
@@ -755,8 +698,6 @@
                         
                     }
                     methodVarNames.Add((string)paramArray[0], methodParamNames);
-
-                    //throw new Exception("ParamLength>1");
                 }
                 else
                 {
@@ -770,30 +711,24 @@
                         
                     }
                     methodVarNames.Add((string)paramArray[0], methodParamNames);
-                    //throw new Exception("ParamLength=1");
                 }
-                //methodResume = pointer;
                 methodCreation = true;
                 
                 
             }
             if (strCommand == "methodex")
             {
-
-                //string[] methodAndVars = paramArray[1].ToString().ToLower().Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
                 if (paramArray.Length == methodParamsReq[currentMethod])
                 {
                     methodResume = pointer;
                     pointer = methodNames[currentMethod.ToString()];
                     inMethod = true;
-                    //methodVars = new Dictionary<string, int>();
                     methodVars = new Dictionary<string, int>();
                     string[] varNames = methodVarNames.GetValueOrDefault(currentMethod, new string[0]);
                     for (int j = 0; j < methodParamsReq.GetValueOrDefault(currentMethod, 0); j++)
                     {
                         if (int.TryParse((string)paramArray[j], out _)) { methodVars.Add(varNames[j], int.Parse((string)paramArray[j])); }
                         else { methodVars.Add(varNames[j], variableValues[(string)paramArray[j]]); }
-                        //throw new Exception("We got here");
 
                     }
 
@@ -812,20 +747,6 @@
         /// </summary>
         /// <param name="multilineText">Text from multiline text box</param>
         /// <returns>void</returns>
-        public void RunMultipleOld(String multilineText) 
-		{
-			if (multilineText == null)
-			{
-				throw new Exception("Nothing in multiple command text area");
-			}
-			String[] multiCommandArray = multilineText.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-			for (int i=0; i < multiCommandArray.Length; i++ )
-			{
-				FullParse(multiCommandArray[i]);
-			}
-
-        }
-
         public void RunMultiple(String multilineText)
         {
             if (multilineText == null)
@@ -866,10 +787,8 @@
                     {
                         object[] paramArray = ParamExtract(splitCommand, strCommand);
                         executeCommand(strCommand, paramArray);
-                        //if (strCommand == "method") { inMethod = true; }//change variables looked at
-                        //if (strCommand == "endmethod") { inMethod = false; }
                     }
-                    else if (strCommand == "endmethod"){ methodCreation = false; }//ignores within method creation
+                    else if (strCommand == "endmethod"){ methodCreation = false; }//ignores within method creation since syntax executes program in backround, var errors in method only checkable on execution
                     Clear.ClearMethod(graphicsHandler);
                     
 				}
@@ -884,11 +803,6 @@
                 Array.Resize(ref errorMessages, errorMessages.Length + 1);
                 errorMessages[errorMessages.Length - 1] = ("Unclosed IF Statement Please Use endif");
             }
-            
-            
-
-            //add inside while and method
-
             resetAllInternalVars();
             return errorMessages;
 		}
@@ -921,7 +835,6 @@
         {
             variableValues = new Dictionary<string, int>();
             methodNames = new Dictionary<string, int>();
-            //methodNames.Add("Imp0ssibleKey", 10);
             methodVars = new Dictionary<string, int>();
             methodParamsReq = new Dictionary<string, int>();
             methodVarNames = new Dictionary<string, string[]>();

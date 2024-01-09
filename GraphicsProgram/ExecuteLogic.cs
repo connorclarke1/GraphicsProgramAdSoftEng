@@ -25,7 +25,7 @@ namespace GraphicsProgram
                 //if its a variable name, checked already in check logic
                 {
                     splitLogicInts[i] = variableValues.GetValueOrDefault(splitLogic[i],0);
-                    //should never default as variables already checked
+                    //will not default as variables already checked
                 }
             }
             int currentValue = splitLogicInts[0];
@@ -41,7 +41,7 @@ namespace GraphicsProgram
 
         public static bool executeInequality(int a, int b, string operatorStr)
         {
-            //if (operatorStr == '') { } ;
+            
             if (operatorStr == ">") { return (a > b); }
             if (operatorStr == ">=") { return (a >= b); }
             if (operatorStr == "==") { return (a == b); }
