@@ -923,6 +923,20 @@
             return methodVars;
         }
 
+        public bool getInsideWhile() { return insideWhile; }
+
+        public bool getWhileBool() { return whileBool; }
+
+        public string[] getWhileLogic() { return whileLogic; }
+
+        public int getWhileStart() { return whileStart; }
+
+        public Dictionary<string,int> getVariableValues() { return variableValues; }
+
+        public bool getInsideIf() { return insideIf; }
+
+        public bool getIfBool() { return ifBool; }
+
 
     }
 }

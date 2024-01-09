@@ -749,31 +749,7 @@ namespace GraphicsProgramTestProject
             Assert.AreEqual(varNamesArray.GetValueOrDefault("a"),10);
         }
 
-        [TestMethod]
-        public void MethodUseWithinWhile_Test()
-        {
-            
-
-            string multiLineText =
-                         "circle 50" + Environment.NewLine +
-                        "circle 20" + Environment.NewLine +
-                        "method test" + Environment.NewLine +
-                       "moveto 50 50" + Environment.NewLine +
-                       "endmethod" + Environment.NewLine +
-                       "test";
-            CommandParser commandParser = new CommandParser();
-            PictureBox p = new PictureBox();
-            GraphicsHandler graphicsHandler = new GraphicsHandler(p);
-            commandParser.setGraphicsHandler(graphicsHandler);
-
-
-            commandParser.RunMultiple(multiLineText);
-
-            Dictionary<string, int> varNamesArray = commandParser.getMethodVars();
-
-            //Assert.AreEqual(varNamesArray.GetValueOrDefault("a"), 10);
-            //run multiple resets all vars on completion
-        }
+        
 
         [TestMethod]
         public void FullParse_MethodSet_Test()
@@ -782,8 +758,62 @@ namespace GraphicsProgramTestProject
         }
 
         [TestMethod]
-        public void NestedWhileInMethodIndexErrorLocation_Test()
+        public void While_Vars_Correct_GoodLogic_Test()
         {
+            CommandParser commandParser = new CommandParser();
+            commandParser.FullParse("while 1 == 1");
+            Assert.IsTrue(commandParser.getInsideWhile());
+            Assert.IsTrue(commandParser.getWhileBool());
+            Assert.AreEqual(0,commandParser.getWhileStart());
+            
+            
+        }
+        [TestMethod]
+        public void While_Vars_Correct_BadLogic_Test()
+        {
+            CommandParser commandParser = new CommandParser();
+            commandParser.FullParse("while 1 == 2");
+            Assert.IsTrue(commandParser.getInsideWhile());
+            Assert.IsFalse(commandParser.getWhileBool());
+            Assert.AreEqual(0, commandParser.getWhileStart());
+
+
+        }
+
+        [TestMethod]
+        public void If_Vars_Correct_GoodLogic_Test()
+        {
+            CommandParser commandParser = new CommandParser();
+            commandParser.FullParse("if 1 == 1");
+            Assert.IsTrue(commandParser.getInsideIf());
+            Assert.IsTrue(commandParser.getIfBool());
+            
+
+
+        }
+        [TestMethod]
+        public void If_Vars_Correct_BadLogic_Test()
+        {
+            CommandParser commandParser = new CommandParser();
+            commandParser.FullParse("if 1 == 2");
+            Assert.IsTrue(commandParser.getInsideIf());
+            Assert.IsFalse(commandParser.getIfBool());
+            
+
+
+        }
+
+        [TestMethod]
+        public void Vars_Set_Updated_Test()
+        {
+            CommandParser commandParser = new CommandParser();
+            commandParser.FullParse("myvar = 12 * 2");
+            commandParser.FullParse("othervar = 18");
+            Assert.AreEqual(commandParser.getVariableValues().GetValueOrDefault("myvar", 0), 24);
+            Assert.AreEqual(commandParser.getVariableValues().GetValueOrDefault("othervar", 0), 18);
+            commandParser.FullParse("myvar = othervar + myvar");
+            Assert.AreEqual(commandParser.getVariableValues().GetValueOrDefault("myvar", 0), 42);
+
 
         }
 
